@@ -382,13 +382,42 @@
     // If teacher_otp matches a student and time available, mark the corresponding period
     if (normalizedTeacherOtp && hours !== null && minutes !== null) {
       if (normalizedStudentOtp === normalizedTeacherOtp) {
-        if (inRange(hours, minutes, 8, 45, 9, 35)) { console.debug('auto mark period 1'); await markPresent(1, student_rollno); }
-        else if (inRange(hours, minutes, 9, 36, 10, 25)) { console.debug('auto mark period 2'); await markPresent(2, student_rollno); }
-        else if (inRange(hours, minutes, 10, 40, 11, 30)) { console.debug('auto mark period 3'); await markPresent(3, student_rollno); }
-        else if (inRange(hours, minutes, 11, 31, 12, 20)) { console.debug('auto mark period 4'); await markPresent(4, student_rollno); }
-        else if (inRange(hours, minutes, 13, 30, 14, 20)) { console.debug('auto mark period 5'); await markPresent(5, student_rollno); }
-        else if (inRange(hours, minutes, 14, 21, 15, 10)) { console.debug('auto mark period 6'); await markPresent(6, student_rollno); }
-        else if (inRange(hours, minutes, 21, 25, 22, 25)) { console.debug('auto mark period 7'); await markPresent(7, student_rollno); }
+        const periods = [
+          { id: 1, sh: 8, sm: 45, eh: 9, em: 35 },
+          { id: 2, sh: 9, sm: 36, eh: 10, em: 25 },
+          { id: 3, sh: 10, sm: 40, eh: 11, em: 30 },
+          { id: 4, sh: 11, sm: 31, eh: 12, em: 20 },
+          { id: 5, sh: 13, sm: 30, eh: 14, em: 20 },
+          { id: 6, sh: 14, sm: 21, eh: 15, em: 10 },
+          { id: 7, sh: 15, sm: 25, eh: 16, em: 25 },
+        ];
+
+        let matched = false;
+        for (const p of periods) {
+          if (inRange(hours, minutes, p.sh, p.sm, p.eh, p.em)) {
+            console.debug(`auto mark period ${p.id}`);
+            await markPresent(p.id, student_rollno);
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched) {
+          // fallback: choose nearest period by midpoint
+          const cur = hours * 60 + minutes;
+          let best = null;
+          let bestDiff = Infinity;
+          for (const p of periods) {
+            const mid = ((p.sh * 60 + p.sm) + (p.eh * 60 + p.em)) / 2;
+            const diff = Math.abs(cur - mid);
+            if (diff < bestDiff) {
+              bestDiff = diff;
+              best = p.id;
+            }
+          }
+          console.warn(`Time ${hours}:${String(minutes).padStart(2,'0')} didn't match any period; falling back to period ${best}`);
+          if (best !== null) await markPresent(best, student_rollno);
+        }
       } else {
         console.debug('teacher_otp does not match studentOtp; teacher_otp=', normalizedTeacherOtp, 'studentOtp=', normalizedStudentOtp);
       }
