@@ -258,6 +258,7 @@
 
   const dateInput = document.getElementById("dateInput");
   const teacher_email = sessionStorage.getItem("email");
+  const session_rollno = sessionStorage.getItem("rollno") || null;
 
   // helper: format Date -> YYYY-MM-DD
   function formatDateYMD(d) {
@@ -295,21 +296,26 @@
       console.error("Error reading teacher OTPs:", e);
     }
 
-    // Fetch student OTPs and find which student used this teacher_otp (if any)
-    try {
-      const snap2 = await get(student_otp_db);
-      if (snap2 && snap2.exists()) {
-        const data = snap2.val();
-        for (let key in data) {
-          if (teacher_otp && data[key].student_otp === teacher_otp) {
-            student_rollno = data[key].rollno;
-            studentOtp = data[key].student_otp;
-            break;
+    // If a rollno is present in session (student logged in), use it.
+    if (session_rollno) {
+      student_rollno = session_rollno;
+    } else {
+      // Fetch student OTPs and find which student used this teacher_otp (if any)
+      try {
+        const snap2 = await get(student_otp_db);
+        if (snap2 && snap2.exists()) {
+          const data = snap2.val();
+          for (let key in data) {
+            if (teacher_otp && data[key].student_otp === teacher_otp) {
+              student_rollno = data[key].rollno;
+              studentOtp = data[key].student_otp;
+              break;
+            }
           }
         }
+      } catch (e) {
+        console.error("Error reading student OTPs:", e);
       }
-    } catch (e) {
-      console.error("Error reading student OTPs:", e);
     }
 
     // Parse time into hours/minutes (24-hour)
@@ -350,7 +356,7 @@
       else if (inRange(hours, minutes, 11, 31, 12, 20)) await markPresent(4, student_rollno);
       else if (inRange(hours, minutes, 13, 30, 14, 20)) await markPresent(5, student_rollno);
       else if (inRange(hours, minutes, 14, 21, 15, 10)) await markPresent(6, student_rollno);
-      else if (inRange(hours, minutes, 20, 25, 21, 45)) await markPresent(7, student_rollno);
+      else if (inRange(hours, minutes, 20, 25, 21, 25)) await markPresent(7, student_rollno);
     }
 
     // Load attendance for the currently selected date
@@ -380,28 +386,22 @@
     if (!rollno) return;
 
     try {
-      const dateRef = ref(database, `student_day_wise_details/${dateStr}`);
-      const snap = await get(dateRef);
+      // Read the record at date/rollno directly
+      const recRef = ref(database, `student_day_wise_details/${dateStr}/${rollno}`);
+      const snap = await get(recRef);
       if (snap && snap.exists()) {
-        const data = snap.val();
-        for (let key in data) {
-          const rec = data[key];
-          if (rec.rollno === rollno) {
-            for (let p = 1; p <= 7; p++) {
-              if (rec[`period${p}`] === true) {
-                // set UI
-                const btn = document.getElementById(`btn${p}`);
-                if (btn) {
-                  btn.textContent = "Present";
-                  btn.style.backgroundColor = "green";
-                }
-                const nameEl = document.getElementById(`name${p}`);
-                const timeEl = document.getElementById(`time${p}`);
-                if (nameEl && rec.markedBy) nameEl.textContent = rec.markedBy;
-                if (timeEl && rec.markedAt) timeEl.textContent = rec.markedAt;
-              }
+        const rec = snap.val();
+        for (let p = 1; p <= 7; p++) {
+          if (rec[`period${p}`] === true) {
+            const btn = document.getElementById(`btn${p}`);
+            if (btn) {
+              btn.textContent = "Present";
+              btn.style.backgroundColor = "green";
             }
-            return;
+            const nameEl = document.getElementById(`name${p}`);
+            const timeEl = document.getElementById(`time${p}`);
+            if (nameEl && rec.markedBy) nameEl.textContent = rec.markedBy;
+            if (timeEl && rec.markedAt) timeEl.textContent = rec.markedAt;
           }
         }
       }
@@ -428,38 +428,34 @@
 
     const dateStr = (dateInput && dateInput.value) ? dateInput.value : todayStr;
     try {
-      const dateRef = ref(database, `student_day_wise_details/${dateStr}`);
-      const snap = await get(dateRef);
+      // Write directly at date/rollno (simple and idempotent)
+      const recRef = ref(database, `student_day_wise_details/${dateStr}/${rollno}`);
+      const snap = await get(recRef);
       if (snap && snap.exists()) {
-        const data = snap.val();
-        for (let key in data) {
-          if (data[key].rollno === rollno) {
-            const recRef = ref(database, `student_day_wise_details/${dateStr}/${key}`);
-            const updates = {
-              [`period${periodNumber}`]: true,
-              markedBy,
-              markedAt,
-            };
-            await update(recRef, updates);
-            return;
-          }
-        }
+        const existing = snap.val();
+        const updates = {
+          ...existing,
+          [`period${periodNumber}`]: true,
+          markedBy,
+          markedAt,
+        };
+        await set(recRef, updates);
+      } else {
+        const newRec = {
+          rollno: rollno,
+          period1: false,
+          period2: false,
+          period3: false,
+          period4: false,
+          period5: false,
+          period6: false,
+          period7: false,
+          markedBy,
+          markedAt,
+        };
+        newRec[`period${periodNumber}`] = true;
+        await set(recRef, newRec);
       }
-      // no record for this rollno on this date -> create one
-      const newRec = {
-        rollno: rollno,
-        period1: false,
-        period2: false,
-        period3: false,
-        period4: false,
-        period5: false,
-        period6: false,
-        period7: false,
-        markedBy,
-        markedAt,
-      };
-      newRec[`period${periodNumber}`] = true;
-      await push(dateRef, newRec);
     } catch (e) {
       console.error("Error writing attendance:", e);
     }
