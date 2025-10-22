@@ -292,8 +292,8 @@ onValue(student_otp_db, (snapshot) => {
             <span>Roll_No: <b>${student.rollno}</b></span>
           </div>
           <div class="right">
-            <p>Time: ${new Date(student.time || Date.now()).toLocaleTimeString()}</p>
-            <p>Date: ${new Date(student.time || Date.now()).toLocaleDateString()}</p>
+            <p>Time: ${student.time}</p>
+            <p>Date: ${student.date}</p>
           </div>
         `;
 
@@ -308,9 +308,6 @@ onValue(student_otp_db, (snapshot) => {
 });
 
       
-
-
-
 
 const delete_btn = document.querySelector('#clearBtn');
 delete_btn.addEventListener('click',()=>
