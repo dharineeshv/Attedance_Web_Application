@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <b>Teacher Dashboard</b>
+    </div>
+    <div class="container-2">
+      <h2>Generate OTP</h2>
+      <div class="otp-container">
+        <input type="text" class="otpbox" id="otpBox1" />
+        <input type="text" class="otpbox" id="otpBox2" />
+        <input type="text" class="otpbox" id="otpBox3" />
+        <input type="text" class="otpbox" id="otpBox4" />
+        <input type="text" class="otpbox" id="otpBox5" />
+        <input type="text" class="otpbox" id="otpBox6" />
+      </div>
+
+      <div class="timer">
+        <b>Expires In</b>
+        <button id="timer-button">15</button>
+      </div>
+      <div class="buttons">
+        <button class="btn" id="btn1">Generete New OTP</button>
+        <button class="btn" id="btn2">Manual Attendance</button>
+      </div>
+    </div>
+    <div id="live">
+<div class="live-header">
+    <b>Live Attendance</b>
+    <button id="clearBtn">Clear All</button>
+  </div>
+</div>
+
+    </div>
+    <div class="student_details">
+      <div class="left">
+        
+      </div>
+      <div class="right">
+        
+      </div>
+    </div>
+  </body>
+</html>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+  * {
+    padding: 0;
+    margin: 0;
+  }
+ #button  {
+  width:100px;
+  display:flex;
+  justify-content: flex-end;
+
+ }
+#live {
+  display: flex;
+  flex-direction: column; /* keep column for student details */
+  padding: 10px;
+  gap: 10px;
+  font-weight: bold;
+}
+
+.live-header {
+  display: flex;
+  justify-content: space-between; /* text left, button right */
+  align-items: center;
+}
+
+#clearBtn {
+  background-color: orangered;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+  .student_details {
+    display: flex; /* horizontal row */
+    justify-content: space-between; /* left + right */
+    align-items: center; /* vertically center */
+    padding: 20px;
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .student_details .left {
+    display: flex;
+    flex-direction: column; /* stack name & roll vertically */
+    gap: 10px;
+  }
+
+  .student_details .right {
+    display: flex;
+    align-items: center; /* vertically center the time */
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .timer button {
+    width: 30vw;
+    height: 5vh;
+    background-color: orangered;
+    border: none;
+    color: white;
+    border-radius: 5px;
+  }
+  .timer {
+    display: none;
+    gap: 5px;
+    flex-direction: column;
+  }
+  .timer b {
+    text-align: center;
+    color: white;
+  }
+  body {
+    font-family: "Roboto", sans-serif;
+  }
+  .container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container-2 b {
+    color: white;
+  }
+   @keyframes blink {
+    0% {
+      background-color: orangered;
+    }
+    50% {
+      background-color: red;
+    }
+    100% {
+      background-color: orangered;
+    }
+  }
+  .container-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: rgb(0, 123, 255);
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+  }
+  .otp-container {
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    padding: 10px;
+    color: rgb(0, 119, 255);
+    border: none;
+    background-color: white;
+    border-radius: 5px;
+    width: 30vw;
+  }
+  h2 {
+    color: white;
+  }
+
+  .otpbox {
+    width: 6vw;
+    height: 7vh;
+    background-color: rgb(241, 242, 244);
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    font-weight: bold;
+  }
+</style>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, get,remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+// Firebase setup
+const appSetting = {
+  databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+};
+const app = initializeApp(appSetting);
+const database = getDatabase(app);
+const student_otp_db = ref(database, "otp_by_student");
+const teacher_otp_db = ref(database, "teachers_otp");
+
+//from sessionstroage as email
+const teacherEmail = (sessionStorage.getItem("email") || "").trim();
+
+// DOM elements
+const btnaction = document.querySelector("#btn1");
+const manual = document.querySelector("#btn2");
+const timer = document.querySelector(".timer");
+const s = document.querySelector("#timer-button");
+const liveContainer = document.querySelector("#live");
+let currentOtp = "";
+
+// Generate OTP
+btnaction.addEventListener("click", () => {
+  currentOtp = "";
+  const otpInputs = document.querySelectorAll(".otpbox");
+  timer.style.display = "flex";
+
+  // Generate random 6-digit OTP
+  otpInputs.forEach((input) => {
+    const value = Math.floor(Math.random() * 10);
+    input.value = value;
+    currentOtp += value;
+  });
+const now = new Date();
+const hours = now.getHours();
+const minutes = now.getMinutes();
+const ampm = hours >= 12 ? 'PM' : 'AM';
+const formattedHours = hours % 12 === 0 ? 12 : hours % 12; // convert 0 → 12
+const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+const time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
+
+  const otpRef = push(teacher_otp_db, { 
+  otp: currentOtp, 
+  email: teacherEmail,
+  createdAt: time12h// store timestamp
+});
+
+// Automatically delete after 25 minutes
+setTimeout(() => {
+  remove(otpRef); 
+}, 1500000); 
+
+  // Timer
+  s.style.backgroundColor = "orangered";
+  s.style.animation = "none";
+  let seconds = 1500; // 25 minutes
+  s.innerHTML = seconds;
+
+  const sec = setInterval(() => {
+    seconds--;
+    s.innerHTML = seconds;
+
+    if (seconds <= 5 && seconds > 0) s.style.animation = "blink 1s infinite";
+
+    if (seconds === 0) {
+      clearInterval(sec);
+      timer.style.display = "none";
+      otpInputs.forEach((input) => (input.value = ""));
+    }
+  }, 1000);
+});
+
+
+
+manual.addEventListener("click", () => {
+  window.location.href = "manual_attendance.html";
+});
+
+
+//verified_____________________________________________________
+
+// Live attendance listener
+onValue(student_otp_db, (snapshot) => {
+  if (snapshot.exists())
+  {
+    let anyStudent = false;
+
+      const data = snapshot.val();
+      for(let key in data)
+      {
+        const student = data[key]; 
+        if(student.students_otp===currentOtp)
+        {
+
+                 anyStudent = true;
+
+      // Check if this student is already displayed
+      if (!document.getElementById(key)) {
+        const studentDiv = document.createElement("div");
+        studentDiv.classList.add("student_details");
+        studentDiv.id = key; // unique ID to prevent duplicates
+
+        studentDiv.innerHTML = `
+          <div class="left">
+            <span>Name: <b>${student.name}</b></span>
+            <span>Roll_No: <b>${student.rollno}</b></span>
+          </div>
+          <div class="right">
+            <p>Time: ${new Date(student.time || Date.now()).toLocaleTimeString()}</p>
+            <p>Date: ${new Date(student.time || Date.now()).toLocaleDateString()}</p>
+          </div>
+        `;
+
+        liveContainer.appendChild(studentDiv);
+      }
+    }
+  }
+
+  // Show or hide live container depending on if any student matched
+  liveContainer.style.display = anyStudent ? "flex" : "none";
+  }
+});
+
+      
+
+
+
+
+const delete_btn = document.querySelector('#clearBtn');
+delete_btn.addEventListener('click',()=>
+{
+    get(student_otp_db).then((snapshot)=>
+    {
+      const data = snapshot.val();
+      for(let key in data)
+      {
+        if(data[key].students_otp===currentOtp)
+        {
+          remove(ref(database,`otp_by_student/${key}`))
+          const studentDiv = document.getElementById(key);
+           if (studentDiv) studentDiv.remove();
+        }
+      }
+    })
+})
+</script>

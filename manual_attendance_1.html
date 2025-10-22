@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Custom Date Input</title>
+  <style>
+    body {
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+    }
+    input[type="date"] {
+      position: relative;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
+      background-color: white;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+    }
+    input[type="date"]:focus {
+      border-color: #4caf50;
+    }
+    input {
+      width: 80vw;
+      text-align: center;
+    }
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .form {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    .box {
+      width: 80vw;
+      border: 2px solid #ccc;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .top-row {
+      display: flex;
+      justify-content: flex-start; 
+      align-items: center;
+      
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end; 
+      width: 100%;
+    }
+    button {
+      padding: 8px;
+      width: 100px;
+      border: none;
+      color: white;
+      background-color: rgba(250, 5, 5, 0.832);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .present {
+      background-color: green;
+    }
+    button:hover {
+      transform: translateY(-1px);
+    }
+    h2 {
+      text-align: center;
+      padding: 2px;
+    }
+    .down {
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    .status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #333;
+    }
+    .left,
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .left b,
+    .right b {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h2>My Attendance</h2>
+  <div class="form">
+    <input type="date" id="dateInput" />
+  </div>
+  <div class="container">
+
+    <div class="box">
+      <div class="top-row">
+        <b>08:45 am to 09:35 am</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>09:35 am to 10:25 am</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>10:40 am to 11:30 am</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>11:30 am to 12:20 pm</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>01:30 pm to 02:20 pm</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>02:20 pm to 03:10 pm</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="top-row">
+        <b>03:25 pm to 04:25 pm</b>
+      </div>
+      <div class="button-group">
+        <button class="present">Mark Present</button>
+        <button>Mark Absent</button>
+      </div>
+      <div class="down"></div>
+      <div class="status">
+        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
+        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+      </div>
+    </div>
+
+  </div>
+<script>
+
+  const dateInput = document.getElementById("dateInput");
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  const formattedDate = `${year}-${month}-${day}`;
+  dateInput.value = formattedDate;
+  
+</script>
