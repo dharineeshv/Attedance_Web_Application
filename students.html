@@ -210,8 +210,9 @@ const ampm = hours >= 12 ? 'PM' : 'AM';
 const formattedHours = hours % 12 === 0 ? 12 : hours % 12; // convert 0 → 12
 const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
 
-const time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
-
+let time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
+let currentDate = new Date();
+let localizedDateString = currentDate.toLocaleDateString()
 
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -230,7 +231,8 @@ const time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
             name: name,
             rollno: rollno,
             students_otp: s_otp,
-            time: time12h
+            time: time12h,
+            date:localizedDateString
           };
           push(student_otp_db, datas_student);
         }
