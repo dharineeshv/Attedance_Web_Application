@@ -258,7 +258,8 @@
 
   const dateInput = document.getElementById("dateInput");
   const teacher_email = sessionStorage.getItem("email");
-  const session_rollno = sessionStorage.getItem("rollno") || null;
+  // accept either lowercase or capitalized session key depending on other pages
+  const session_rollno = sessionStorage.getItem("rollno") || sessionStorage.getItem("Rollno") || null;
 
   // helper: format Date -> YYYY-MM-DD
   function formatDateYMD(d) {
@@ -306,9 +307,11 @@
         if (snap2 && snap2.exists()) {
           const data = snap2.val();
           for (let key in data) {
-            if (teacher_otp && data[key].student_otp === teacher_otp) {
+            // Accept either `student_otp` or `students_otp` property names (other pages vary)
+            const sOtpField = data[key].student_otp || data[key].students_otp || "";
+            if (teacher_otp && sOtpField === teacher_otp) {
               student_rollno = data[key].rollno;
-              studentOtp = data[key].student_otp;
+              studentOtp = sOtpField;
               break;
             }
           }
@@ -356,7 +359,7 @@
       else if (inRange(hours, minutes, 11, 31, 12, 20)) await markPresent(4, student_rollno);
       else if (inRange(hours, minutes, 13, 30, 14, 20)) await markPresent(5, student_rollno);
       else if (inRange(hours, minutes, 14, 21, 15, 10)) await markPresent(6, student_rollno);
-      else if (inRange(hours, minutes, 20, 25, 21, 25)) await markPresent(7, student_rollno);
+      else if (inRange(hours, minutes, 20, 25, 21, 55)) await markPresent(7, student_rollno);
     }
 
     // Load attendance for the currently selected date
