@@ -321,25 +321,49 @@
       }
     }
 
+    // If we have a student_rollno but didn't set studentOtp above, try to find student's otp record
+    try {
+      if (student_rollno && !studentOtp) {
+        const snap3 = await get(student_otp_db);
+        if (snap3 && snap3.exists()) {
+          const d3 = snap3.val();
+          for (let k in d3) {
+            const sOtpField = d3[k].student_otp || d3[k].students_otp || "";
+            if (d3[k].rollno === student_rollno && sOtpField) {
+              // capture whatever otp this student has most recently used
+              studentOtp = sOtpField;
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error looking up student otp by rollno:", e);
+    }
+
+    // Debug logging
+    console.debug("init(): teacher_email=", teacher_email, "teacher_otp=", teacher_otp, "student_rollno=", student_rollno, "studentOtp=", studentOtp, "time=", time);
+
     // Parse time into hours/minutes (24-hour)
     let hours = null,
       minutes = null;
     if (time) {
       const t = time.trim();
-      const ampmMatch = t.match(/(AM|PM)$/i);
-      if (ampmMatch) {
-        const parts = t.split(/\s+/);
-        const timePart = parts[0];
-        const ampm = parts[1];
-        const [hStr, mStr] = timePart.split(":");
+      // Accept '03:25 PM' or '03:25PM' or '3:25PM' or '15:25'
+      const re = /^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i;
+      const m = t.match(re);
+      if (m) {
+        const hStr = m[1];
+        const mStr = m[2];
+        const ampm = m[3];
         hours = parseInt(hStr, 10);
         minutes = parseInt(mStr, 10);
-        if (/pm/i.test(ampm) && hours < 12) hours += 12;
-        if (/am/i.test(ampm) && hours === 12) hours = 0;
-      } else if (t.includes(":")) {
-        const [hStr, mStr] = t.split(":");
-        hours = parseInt(hStr, 10);
-        minutes = parseInt(mStr, 10);
+        if (ampm) {
+          if (/pm/i.test(ampm) && hours < 12) hours += 12;
+          if (/am/i.test(ampm) && hours === 12) hours = 0;
+        }
+      } else {
+        console.warn('Unrecognized time format from teachers_otp.createdAt:', time);
       }
     }
 
@@ -351,15 +375,23 @@
       return val >= start && val <= end;
     }
 
+    // Normalize OTPs for comparison
+    const normalizedTeacherOtp = (teacher_otp || "").toString().trim();
+    const normalizedStudentOtp = (studentOtp || "").toString().trim();
+
     // If teacher_otp matches a student and time available, mark the corresponding period
-    if (studentOtp && teacher_otp && studentOtp === teacher_otp && hours !== null && minutes !== null) {
-      if (inRange(hours, minutes, 8, 45, 9, 35)) await markPresent(1, student_rollno);
-      else if (inRange(hours, minutes, 9, 36, 10, 25)) await markPresent(2, student_rollno);
-      else if (inRange(hours, minutes, 10, 40, 11, 30)) await markPresent(3, student_rollno);
-      else if (inRange(hours, minutes, 11, 31, 12, 20)) await markPresent(4, student_rollno);
-      else if (inRange(hours, minutes, 13, 30, 14, 20)) await markPresent(5, student_rollno);
-      else if (inRange(hours, minutes, 14, 21, 15, 10)) await markPresent(6, student_rollno);
-      else if (inRange(hours, minutes, 20, 25, 21, 55)) await markPresent(7, student_rollno);
+    if (normalizedTeacherOtp && hours !== null && minutes !== null) {
+      if (normalizedStudentOtp === normalizedTeacherOtp) {
+        if (inRange(hours, minutes, 8, 45, 9, 35)) { console.debug('auto mark period 1'); await markPresent(1, student_rollno); }
+        else if (inRange(hours, minutes, 9, 36, 10, 25)) { console.debug('auto mark period 2'); await markPresent(2, student_rollno); }
+        else if (inRange(hours, minutes, 10, 40, 11, 30)) { console.debug('auto mark period 3'); await markPresent(3, student_rollno); }
+        else if (inRange(hours, minutes, 11, 31, 12, 20)) { console.debug('auto mark period 4'); await markPresent(4, student_rollno); }
+        else if (inRange(hours, minutes, 13, 30, 14, 20)) { console.debug('auto mark period 5'); await markPresent(5, student_rollno); }
+        else if (inRange(hours, minutes, 14, 21, 15, 10)) { console.debug('auto mark period 6'); await markPresent(6, student_rollno); }
+        else if (inRange(hours, minutes, 21, 25, 22, 25)) { console.debug('auto mark period 7'); await markPresent(7, student_rollno); }
+      } else {
+        console.debug('teacher_otp does not match studentOtp; teacher_otp=', normalizedTeacherOtp, 'studentOtp=', normalizedStudentOtp);
+      }
     }
 
     // Load attendance for the currently selected date
