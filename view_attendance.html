@@ -238,7 +238,9 @@
     ref,
     set,
     onValue,
-    get
+    get,
+    push,
+    update
   } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
   const appSetting = {
@@ -248,159 +250,235 @@
   const database = getDatabase(app);
 
   //________________________________________________________
-  //databases...
+  //databases (student OTP table, per-date attendance under student_day_wise_details/<YYYY-MM-DD>)
   const student_otp_db = ref(database, "otp_by_student");
   const student_all_otp_details = ref(database, "student_day_wise_details");
-  const teacher_otp_details  = ref(database,"teachers_otp");
+  const teacher_otp_db = ref(database, "teachers_otp");
   //_________________________________________________________
 
   const dateInput = document.getElementById("dateInput");
+  const teacher_email = sessionStorage.getItem("email");
 
-  //email of teacher.
-  const teacher_email =  sessionStorage.getItem("email");
-
-  //createdAt (time)
-  let time ="";
-  const teacher_otp = ""
-  get(teacher_otp_db).then((snapshot) => {
-        if (snapshot.exists())
-        {
-          const data = snapshot.val();
-          for(let key in data)
-          {
-            if(teacher_email === data[key].email)
-          {
-               time = data[key].createdAt;
-               teacher_otp = data[key].otp;
-          }
-          }
-
-        }
-  });
-  let studentOtp=""
-  let student_rollno ="";
-  get(student_otp_db).then((snapshot) => {
-        if (snapshot.exists())
-        {
-          const data = snapshot.val();
-          for(let key in data)
-          {
-            if(data[key].student_otp === teacher_otp)
-            {
-              student_rollno = data[key].rollno;
-              studentOtp = data[key].student_otp;
-              break;
-            }
-          }
-        }
-});
-let [timePart, ampm] = time.split(" "); // ["03:25", "PM"]
-let [hours, minutes] = timePart.split(":"); 
-hours = parseInt(hours); 
-minutes = parseInt(minutes);
-
-
-if(studentOtp===teacher_otp)
-{
-      if((hours===8 && (minutes>=45 && minutes<=59)) || (hours==9 && (minutes>=0 && minutes <=35)))
-      {
-        markPresent(1)
-      }
-      else if((hours===9 && (minutes>35 && minutes<=59)) || (hours==10 && (minutes>=0 && minutes <=25)))
-      {
-        markPresent(2)
-      }
-      else if((hours===10 && (minutes>=40 && minutes<=59)) || (hours==11 && (minutes>=0 && minutes <=30)))
-      {
-        markPresent(3)
-      }
-      else if((hours===11 && (minutes>30 && minutes<=59)) || (hours==12 && (minutes>=0 && minutes <=20)))
-      {
-        markPresent(4)
-      }
-      else if((hours===1 && (minutes>=30 && minutes<=59)) || (hours==2 && (minutes>=0 && minutes <=20)))
-      {
-        markPresent(5)
-      }
-      else if((hours===2 && (minutes>20 && minutes<=59)) || (hours==3 && (minutes>=0 && minutes <=10)))
-      {
-        markPresent(6)
-      }
-      else if((hours===3 && (minutes>=25 && minutes<=59)) || (hours==4 && (minutes>=0 && minutes <=25)))
-      {
-        markPresent(7)
-      }
-}
-
-onValue(student_all_otp_details, (snapshot) => {
-  if (snapshot.exists())
-  {
-      const data = snapshot.val();   
-      for(let key in data)
-      {
-        if(data[key].rollno === student_rollno)
-        {
-           if(data[key].period1===true)
-           {
-             markPresent(1)
-           }
-           if(data[key].period2===true)
-           {
-             markPresent(2)
-           }
-           if(data[key].period3===true)
-           {
-             markPresent(3)
-           }
-           if(data[key].period4===true)
-           {
-             markPresent(4)
-           }
-           if(data[key].period5===true)
-           {
-             markPresent(5)
-           }
-           if(data[key].period6===true)
-           {
-             markPresent(6)
-           }
-           if(data[key].period7===true)
-           {
-             markPresent(7)
-           }
-        }
-      }   
+  // helper: format Date -> YYYY-MM-DD
+  function formatDateYMD(d) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
   }
-  else
-  {
-    const details = {
-      rollno:student_rollno,
-      period1:false,
-      period2:false,
-      period3:false,
-      period4:false,
-      period5:false,
-      period6:false,
-      period7:false
+
+  // Set default date to today if empty
+  const todayStr = formatDateYMD(new Date());
+  if (dateInput && !dateInput.value) dateInput.value = todayStr;
+
+  // initialize everything
+  async function init() {
+    let time = "";
+    let teacher_otp = "";
+    let studentOtp = "";
+    let student_rollno = "";
+
+    // Fetch teacher otp record matching the teacher email
+    try {
+      const snap = await get(teacher_otp_db);
+      if (snap && snap.exists()) {
+        const data = snap.val();
+        for (let key in data) {
+          if (teacher_email && data[key].email === teacher_email) {
+            time = data[key].createdAt || "";
+            teacher_otp = data[key].otp || "";
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error reading teacher OTPs:", e);
     }
-    push(student_all_otp_details,details);
+
+    // Fetch student OTPs and find which student used this teacher_otp (if any)
+    try {
+      const snap2 = await get(student_otp_db);
+      if (snap2 && snap2.exists()) {
+        const data = snap2.val();
+        for (let key in data) {
+          if (teacher_otp && data[key].student_otp === teacher_otp) {
+            student_rollno = data[key].rollno;
+            studentOtp = data[key].student_otp;
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error reading student OTPs:", e);
+    }
+
+    // Parse time into hours/minutes (24-hour)
+    let hours = null,
+      minutes = null;
+    if (time) {
+      const t = time.trim();
+      const ampmMatch = t.match(/(AM|PM)$/i);
+      if (ampmMatch) {
+        const parts = t.split(/\s+/);
+        const timePart = parts[0];
+        const ampm = parts[1];
+        const [hStr, mStr] = timePart.split(":");
+        hours = parseInt(hStr, 10);
+        minutes = parseInt(mStr, 10);
+        if (/pm/i.test(ampm) && hours < 12) hours += 12;
+        if (/am/i.test(ampm) && hours === 12) hours = 0;
+      } else if (t.includes(":")) {
+        const [hStr, mStr] = t.split(":");
+        hours = parseInt(hStr, 10);
+        minutes = parseInt(mStr, 10);
+      }
+    }
+
+    // helper to check a time window (inclusive)
+    function inRange(h, m, sh, sm, eh, em) {
+      const val = h * 60 + m;
+      const start = sh * 60 + sm;
+      const end = eh * 60 + em;
+      return val >= start && val <= end;
+    }
+
+    // If teacher_otp matches a student and time available, mark the corresponding period
+    if (studentOtp && teacher_otp && studentOtp === teacher_otp && hours !== null && minutes !== null) {
+      if (inRange(hours, minutes, 8, 45, 9, 35)) await markPresent(1, student_rollno);
+      else if (inRange(hours, minutes, 9, 36, 10, 25)) await markPresent(2, student_rollno);
+      else if (inRange(hours, minutes, 10, 40, 11, 30)) await markPresent(3, student_rollno);
+      else if (inRange(hours, minutes, 11, 31, 12, 20)) await markPresent(4, student_rollno);
+      else if (inRange(hours, minutes, 13, 30, 14, 20)) await markPresent(5, student_rollno);
+      else if (inRange(hours, minutes, 14, 21, 15, 10)) await markPresent(6, student_rollno);
+      else if (inRange(hours, minutes, 20, 25, 21, 45)) await markPresent(7, student_rollno);
+    }
+
+    // Load attendance for the currently selected date
+    const initialDate = dateInput && dateInput.value ? dateInput.value : todayStr;
+    await loadAttendanceForDate(initialDate, student_rollno);
+
+    // Listen for date changes
+    if (dateInput) {
+      dateInput.addEventListener("change", async () => {
+        const selected = dateInput.value || todayStr;
+        await loadAttendanceForDate(selected, student_rollno);
+      });
+    }
   }
-});
 
+  // Load attendance for a given date (YYYY-MM-DD) and rollno
+  async function loadAttendanceForDate(dateStr, rollno) {
+    // reset UI
+    for (let i = 1; i <= 7; i++) {
+      markAbsent(i);
+      const nameEl = document.getElementById(`name${i}`);
+      const timeEl = document.getElementById(`time${i}`);
+      if (nameEl) nameEl.textContent = "";
+      if (timeEl) timeEl.textContent = "";
+    }
 
-function markPresent(btnId) {
-    const btn = document.querySelector(btnId);
-    btn.textContent = "Present";
-    btn.style.backgroundColor = "green";
-    //want to update in db.
-    
-}
+    if (!rollno) return;
 
-  function markAbsent(btnId) {
-    const btn = document.querySelector(btnId);
-    btn.textContent = "Absent";
-    btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
+    try {
+      const dateRef = ref(database, `student_day_wise_details/${dateStr}`);
+      const snap = await get(dateRef);
+      if (snap && snap.exists()) {
+        const data = snap.val();
+        for (let key in data) {
+          const rec = data[key];
+          if (rec.rollno === rollno) {
+            for (let p = 1; p <= 7; p++) {
+              if (rec[`period${p}`] === true) {
+                // set UI
+                const btn = document.getElementById(`btn${p}`);
+                if (btn) {
+                  btn.textContent = "Present";
+                  btn.style.backgroundColor = "green";
+                }
+                const nameEl = document.getElementById(`name${p}`);
+                const timeEl = document.getElementById(`time${p}`);
+                if (nameEl && rec.markedBy) nameEl.textContent = rec.markedBy;
+                if (timeEl && rec.markedAt) timeEl.textContent = rec.markedAt;
+              }
+            }
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error loading attendance for date", dateStr, e);
+    }
   }
+
+  // Mark present: updates UI and writes attendance under student_day_wise_details/<date>
+  async function markPresent(periodNumber, rollno) {
+    const btn = document.getElementById(`btn${periodNumber}`);
+    if (btn) {
+      btn.textContent = "Present";
+      btn.style.backgroundColor = "green";
+    }
+    const nameEl = document.getElementById(`name${periodNumber}`);
+    const timeEl = document.getElementById(`time${periodNumber}`);
+    const markedBy = sessionStorage.getItem("teacherName") || sessionStorage.getItem("email") || "";
+    const markedAt = new Date().toLocaleTimeString();
+    if (nameEl) nameEl.textContent = markedBy;
+    if (timeEl) timeEl.textContent = markedAt;
+
+    if (!rollno) return; // cannot persist without roll number
+
+    const dateStr = (dateInput && dateInput.value) ? dateInput.value : todayStr;
+    try {
+      const dateRef = ref(database, `student_day_wise_details/${dateStr}`);
+      const snap = await get(dateRef);
+      if (snap && snap.exists()) {
+        const data = snap.val();
+        for (let key in data) {
+          if (data[key].rollno === rollno) {
+            const recRef = ref(database, `student_day_wise_details/${dateStr}/${key}`);
+            const updates = {
+              [`period${periodNumber}`]: true,
+              markedBy,
+              markedAt,
+            };
+            await update(recRef, updates);
+            return;
+          }
+        }
+      }
+      // no record for this rollno on this date -> create one
+      const newRec = {
+        rollno: rollno,
+        period1: false,
+        period2: false,
+        period3: false,
+        period4: false,
+        period5: false,
+        period6: false,
+        period7: false,
+        markedBy,
+        markedAt,
+      };
+      newRec[`period${periodNumber}`] = true;
+      await push(dateRef, newRec);
+    } catch (e) {
+      console.error("Error writing attendance:", e);
+    }
+  }
+
+  function markAbsent(periodNumber) {
+    const btn = document.getElementById(`btn${periodNumber}`);
+    if (btn) {
+      btn.textContent = "Absent";
+      btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
+    }
+    const nameEl = document.getElementById(`name${periodNumber}`);
+    const timeEl = document.getElementById(`time${periodNumber}`);
+    if (nameEl) nameEl.textContent = "";
+    if (timeEl) timeEl.textContent = "";
+  }
+
+  // Start initialization
+  init();
 </script>
 
 <script
