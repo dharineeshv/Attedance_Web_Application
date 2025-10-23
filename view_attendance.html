@@ -280,15 +280,25 @@
     let studentOtp = "";
     let student_rollno = "";
 
-    // Fetch teacher otp record matching the teacher email
+    // Fetch teacher otp records (we'll build a map and prefer the one for this teacher_email if available)
+    let teacherMap = {}; // otpKey -> { otp, createdAt, email }
     try {
       const snap = await get(teacher_otp_db);
       if (snap && snap.exists()) {
         const data = snap.val();
         for (let key in data) {
-          if (teacher_email && data[key].email === teacher_email) {
-            time = data[key].createdAt || "";
-            teacher_otp = data[key].otp || "";
+          const rec = data[key] || {};
+          const o = (rec.otp || "").toString().trim();
+          if (!o) continue;
+          teacherMap[o] = { otp: o, createdAt: rec.createdAt || "", email: rec.email || "" };
+        }
+      }
+      // If we have a teacher_email, try to use that exact record
+      if (teacher_email) {
+        for (const o in teacherMap) {
+          if (teacherMap[o].email === teacher_email) {
+            teacher_otp = teacherMap[o].otp;
+            time = teacherMap[o].createdAt || "";
             break;
           }
         }
@@ -300,49 +310,49 @@
     // If a rollno is present in session (student logged in), use it.
     if (session_rollno) {
       student_rollno = session_rollno;
-    } else {
-      // Fetch student OTPs and find which student used this teacher_otp (if any)
-      try {
-        const snap2 = await get(student_otp_db);
-        if (snap2 && snap2.exists()) {
-          const data = snap2.val();
-          for (let key in data) {
-            // Accept either `student_otp` or `students_otp` property names (other pages vary)
-            const sOtpField = data[key].student_otp || data[key].students_otp || "";
-            if (teacher_otp && sOtpField === teacher_otp) {
-              student_rollno = data[key].rollno;
-              studentOtp = sOtpField;
-              break;
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Error reading student OTPs:", e);
-      }
     }
 
-    // If we have a student_rollno but didn't set studentOtp above, try to find student's otp record
+    // Fetch student OTPs and build a map so we can match by OTP if needed
+    let studentMap = {}; // otp -> { rollno, otp, time, date }
     try {
-      if (student_rollno && !studentOtp) {
-        const snap3 = await get(student_otp_db);
-        if (snap3 && snap3.exists()) {
-          const d3 = snap3.val();
-          for (let k in d3) {
-            const sOtpField = d3[k].student_otp || d3[k].students_otp || "";
-            if (d3[k].rollno === student_rollno && sOtpField) {
-              // capture whatever otp this student has most recently used
-              studentOtp = sOtpField;
-              break;
-            }
-          }
+      const snap2 = await get(student_otp_db);
+      if (snap2 && snap2.exists()) {
+        const data = snap2.val();
+        for (let key in data) {
+          const rec = data[key] || {};
+          const sOtpField = (rec.student_otp || rec.students_otp || "").toString().trim();
+          if (!sOtpField) continue;
+          // prefer the most recent if multiple entries have same otp (we can't know timestamp reliably here)
+          studentMap[sOtpField] = { rollno: rec.rollno || "", otp: sOtpField, time: rec.time || rec.createdAt || "", date: rec.date || "" };
         }
       }
     } catch (e) {
-      console.error("Error looking up student otp by rollno:", e);
+      console.error("Error reading student OTPs:", e);
     }
 
-    // Debug logging
-    console.debug("init(): teacher_email=", teacher_email, "teacher_otp=", teacher_otp, "student_rollno=", student_rollno, "studentOtp=", studentOtp, "time=", time);
+    // If we don't yet have student_rollno, try to find a student matching the teacher_otp
+    if (!student_rollno && teacher_otp) {
+      const candidate = studentMap[teacher_otp];
+      if (candidate) {
+        student_rollno = candidate.rollno;
+        studentOtp = candidate.otp;
+      }
+    }
+
+    // If student_rollno provided but we don't have studentOtp, try to find any otp belonging to that rollno
+    if (student_rollno && !studentOtp) {
+      for (const o in studentMap) {
+        if (studentMap[o].rollno === student_rollno) {
+          studentOtp = studentMap[o].otp;
+          break;
+        }
+      }
+    }
+
+    // (We already built studentMap above and attempted to populate studentOtp/rollno)
+
+  // Debug logging: show the resolved values we will use for matching
+  console.debug("init(): resolved -> teacher_email=", teacher_email, "teacher_otp=", teacher_otp, "student_rollno=", student_rollno, "studentOtp=", studentOtp, "time=", time);
 
     // Parse time into hours/minutes (24-hour)
     let hours = null,
