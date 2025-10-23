@@ -81,7 +81,7 @@
       }
 
       .container-4 {
-        display: none;
+        display: flex;
         box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
         justify-content: space-between;
         padding: 20px;
@@ -229,9 +229,14 @@ button:hover {
                    user_name.innerHTML = data[key].name;
                    id.innerHTML = data[key].emailOrRoll;
                 }
+                
             }
           }
         });
+      });
+      const view_btn = document.querySelector("#view");
+      view_btn.addEventListener("click", () => {
+        window.location.href = "manual_attendance_1.html";
       });
     </script>
   </body>
