@@ -339,6 +339,29 @@
       }
     }
 
+    // If we still don't have a teacher_otp chosen (for example viewer is student),
+    // try to find an OTP that exists in both teacherMap and studentMap and use that.
+    if (!teacher_otp) {
+      for (const o in studentMap) {
+        if (teacherMap[o]) {
+          teacher_otp = teacherMap[o].otp;
+          time = teacherMap[o].createdAt || time || "";
+          // ensure rollno and studentOtp are filled
+          if (!student_rollno) student_rollno = studentMap[o].rollno;
+          if (!studentOtp) studentOtp = studentMap[o].otp;
+          console.debug("Matched OTP in DB between teacher and student:", o, "-> using this OTP/time and rollno=", student_rollno);
+          break;
+        }
+      }
+    }
+
+    // Also, if we have a studentOtp but no teacher_otp, and teacherMap has that otp, use it
+    if (!teacher_otp && studentOtp && teacherMap[studentOtp]) {
+      teacher_otp = teacherMap[studentOtp].otp;
+      time = teacherMap[studentOtp].createdAt || time || "";
+      console.debug("Found teacher record for student's otp; using teacher_otp/time for otp=", studentOtp);
+    }
+
     // If student_rollno provided but we don't have studentOtp, try to find any otp belonging to that rollno
     if (student_rollno && !studentOtp) {
       for (const o in studentMap) {
@@ -351,7 +374,9 @@
 
     // (We already built studentMap above and attempted to populate studentOtp/rollno)
 
-  // Debug logging: show the resolved values we will use for matching
+    // Normalize and Debug logging: show the resolved values we will use for matching
+    teacher_otp = (teacher_otp || "").toString().trim();
+    studentOtp = (studentOtp || "").toString().trim();
   console.debug("init(): resolved -> teacher_email=", teacher_email, "teacher_otp=", teacher_otp, "student_rollno=", student_rollno, "studentOtp=", studentOtp, "time=", time);
 
     // Parse time into hours/minutes (24-hour)
