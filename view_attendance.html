@@ -242,7 +242,6 @@
     push,
     update
   } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
-console.log("🔥 script loaded");
 
   const appSetting = {
     databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
@@ -414,20 +413,8 @@ console.log("🔥 script loaded");
         }
 
         if (!matched) {
-          // fallback: choose nearest period by midpoint
-          const cur = hours * 60 + minutes;
-          let best = null;
-          let bestDiff = Infinity;
-          for (const p of periods) {
-            const mid = ((p.sh * 60 + p.sm) + (p.eh * 60 + p.em)) / 2;
-            const diff = Math.abs(cur - mid);
-            if (diff < bestDiff) {
-              bestDiff = diff;
-              best = p.id;
-            }
-          }
-          console.warn(`Time ${hours}:${String(minutes).padStart(2,'0')} didn't match any period; falling back to period ${best}`);
-          if (best !== null) await markPresent(best, student_rollno);
+          // Do NOT fallback to a nearest period. Only mark Present if the time is inside a defined period.
+          console.warn(`Time ${hours}:${String(minutes).padStart(2,'0')} did not match any defined period; attendance will NOT be auto-marked.`);
         }
       } else {
         console.debug('teacher_otp does not match studentOtp; teacher_otp=', normalizedTeacherOtp, 'studentOtp=', normalizedStudentOtp);
@@ -556,4 +543,3 @@ console.log("🔥 script loaded");
   src="https://kit.fontawesome.com/6045d1d2eb.js"
   crossorigin="anonymous"
 ></script>
-
