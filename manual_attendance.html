@@ -81,7 +81,7 @@
       }
 
       .container-4 {
-        display: none;
+        display: flex;
         box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
         justify-content: space-between;
         padding: 20px;
@@ -228,8 +228,15 @@ button:hover {
                    container_4.style.display = "flex";
                    user_name.innerHTML = data[key].name;
                    id.innerHTML = data[key].emailOrRoll;
+                   break;
                 }
-                
+                else
+                {
+                  container_4.style.display = "none";
+                  user_name.innerHTML = "";
+                  id.innerHTML = "";
+                }
+
             }
           }
         });
@@ -241,4 +248,3 @@ button:hover {
     </script>
   </body>
 </html>
-
