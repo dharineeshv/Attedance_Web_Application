@@ -109,64 +109,6 @@
     .right b {
       color: #333;
     }
-
-    /* Mobile Responsive CSS */
-@media (max-width: 768px) {
-  input[type="date"] {
-    width: 90vw;
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .container {
-    gap: 15px;
-    align-items: center;
-  }
-
-  .box {
-    width: 95%;
-    padding: 10px;
-    gap: 8px;
-  }
-
-  .top-row b {
-    font-size: 14px;
-  }
-
-  .button-group {
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .button-group button {
-    width: 100%;
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .status {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    font-size: 12px;
-  }
-
-  .left, .right {
-    flex-direction: row;
-    gap: 5px;
-  }
-
-  h2 {
-    font-size: 1.2rem;
-    padding: 5px;
-  }
-
-  .down {
-    margin-top: 5px;
-  }
-}
-
   </style>
 </head>
 <body>
@@ -181,8 +123,8 @@
         <b>08:45 am to 09:35 am</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="1p">Mark Present</button>
+        <button id="1a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -196,8 +138,8 @@
         <b>09:35 am to 10:25 am</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="2p">Mark Present</button>
+        <button id="2a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -211,8 +153,8 @@
         <b>10:40 am to 11:30 am</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="3p">Mark Present</button>
+        <button id="3a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -226,8 +168,8 @@
         <b>11:30 am to 12:20 pm</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="4p">Mark Present</button>
+        <button id="4a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -241,8 +183,8 @@
         <b>01:30 pm to 02:20 pm</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="5p">Mark Present</button>
+        <button id="5a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -256,8 +198,8 @@
         <b>02:20 pm to 03:10 pm</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="6p">Mark Present</button>
+        <button id="6a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -271,8 +213,8 @@
         <b>03:25 pm to 04:25 pm</b>
       </div>
       <div class="button-group">
-        <button class="present">Mark Present</button>
-        <button>Mark Absent</button>
+        <button class="present" id="7p">Mark Present</button>
+        <button id="7a">Mark Absent</button>
       </div>
       <div class="down"></div>
       <div class="status">
@@ -282,7 +224,27 @@
     </div>
 
   </div>
-<script>
+<script type="module">
+  
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    get,
+    push,
+    update
+  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+  const appSetting = {
+    databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+  };
+  const app = initializeApp(appSetting);
+  const database = getDatabase(app);
+
+  const student_all_otp_details = ref(database, "student_day_wise_details");
+  
 
   const dateInput = document.getElementById("dateInput");
   const today = new Date();
@@ -291,6 +253,44 @@
   const day = String(today.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
   dateInput.value = formattedDate;
-  
-</script>
 
+   const presentButtons = document.querySelectorAll("button.present");
+   
+   
+
+  // Add click listener to each
+  presentButtons.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+       const clickedBtn = e.target;
+    const buttonId = clickedBtn.id;
+
+    // Find the parent box for this button
+    const box = clickedBtn.closest(".box");
+
+    // Find the specific left and right sections inside this box
+    const leftDiv = box.querySelector(".left");
+    const rightDiv = box.querySelector(".right");
+  const rollno = sessionStorage.getItem("rollno");
+  const date = dateInput.value;
+  const teacher_email = sessionStorage.getItem("email");
+  const boxNumber = buttonId.replace("p", ""); // e.g. 1p → 1
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+   const updateRef = ref(database, `student_day_wise_details/${date}/${rollno}/period${boxNumber}`);
+
+    // ✅ Update data in Firebase
+    await update(updateRef, {
+      status: "Present",
+      time: time,
+      markedBy: teacher_email
+    });
+
+    // ✅ Update UI instantly
+    leftDiv.innerHTML = `<p>Marked by:</p><b>${teacher_email}</b>`;
+    rightDiv.innerHTML = `<p>Time:</p><b>${time}</b>`;
+
+    // ✅ Optional visual cue
+    clickedBtn.classList.add("present");
+    });
+  });
+</script>
