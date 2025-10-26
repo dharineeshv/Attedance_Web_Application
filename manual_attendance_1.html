@@ -109,6 +109,64 @@
     .right b {
       color: #333;
     }
+
+    /* Mobile Responsive CSS */
+@media (max-width: 768px) {
+  input[type="date"] {
+    width: 90vw;
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .container {
+    gap: 15px;
+    align-items: center;
+  }
+
+  .box {
+    width: 95%;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .top-row b {
+    font-size: 14px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .button-group button {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 12px;
+  }
+
+  .left, .right {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    padding: 5px;
+  }
+
+  .down {
+    margin-top: 5px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -235,3 +293,4 @@
   dateInput.value = formattedDate;
   
 </script>
+
