@@ -254,8 +254,11 @@
   const student_all_otp_details = ref(database, "student_day_wise_details");
   const teacher_otp_db = ref(database, "teachers_otp");
 
-
+  const today = new Date();
   const dateInput = document.getElementById("dateInput");
+  dateInput.value = today.toISOString().split('T')[0];
+  
+
 
 
   const teacher_email = sessionStorage.getItem("email");
@@ -388,7 +391,16 @@ dateInput.addEventListener('change',()=>
  let changed_date = dateInput.value;
  let [yyyy, mm, dd] = changed_date.split("-");
   let formattedInputDate = `${dd}-${mm}-${yyyy}`;
-
+for (let i = 1; i <= 7; i++) {
+  const btn = document.getElementById(`btn${i}`);
+  const nameField = document.getElementById(`name${i}`);
+  const timeField = document.getElementById(`time${i}`);
+  
+  btn.textContent = "Absent";
+  btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
+  nameField.textContent = "";
+  timeField.textContent = "";
+}
 
 
    get(student_all_otp_details).then(snapshot => {
