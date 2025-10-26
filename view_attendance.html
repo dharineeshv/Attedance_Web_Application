@@ -336,7 +336,15 @@ function evaluateAndMark(timeStr, dateStr) {
     const alreadyMarked = Object.values(allData).some(
       e => e.rollno === rollno && e.boxNumber === boxNumber && e.date === dateStr
     );
-    if (!alreadyMarked) push(student_all_otp_details, datas);
+    if (!alreadyMarked) 
+    {
+      const formattedDate = dateStr; 
+
+const recordRef = ref(database, `student_day_wise_details/${rollno}/${dateStr}/period${boxNumber}`);
+
+update(recordRef, datas);
+
+    }
   });
 }
 
@@ -360,21 +368,26 @@ function markPresent(boxNumber) {
   const nameField = document.getElementById(`name${boxNumber}`);
   const timeField = document.getElementById(`time${boxNumber}`);
 
+  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const currentDate = dateInput.value; // YYYY-MM-DD
+
   btn.textContent = "Present";
   btn.style.backgroundColor = "green";
-
   nameField.textContent = teacher_email;
-  timeField.textContent = time;
+  timeField.textContent = currentTime;
 
-   datas = {
+  const datas = {
     rollno: rollno,
     boxNumber: boxNumber,
     markedBy: teacher_email,
-    time: time,
+    time: currentTime,
     status:"Present",
-    date:date
-   }
-   push(student_all_otp_details, datas);
+    date: currentDate
+  };
+
+  const recordRef = ref(database, `student_day_wise_details/${rollno}/${currentDate}/period${boxNumber}`);
+
+  update(recordRef, datas); // This will overwrite existing entry
 }
 
 onValue(student_all_otp_details, function(snapshot) {
@@ -398,46 +411,42 @@ onValue(student_all_otp_details, function(snapshot) {
     }
   }
 });
-dateInput.addEventListener('change',()=>
-{
- let changed_date = dateInput.value;
- let [yyyy, mm, dd] = changed_date.split("-");
-  let formattedInputDate = `${dd}-${mm}-${yyyy}`;
-for (let i = 1; i <= 7; i++) {
-  const btn = document.getElementById(`btn${i}`);
-  const nameField = document.getElementById(`name${i}`);
-  const timeField = document.getElementById(`time${i}`);
-  
-  btn.textContent = "Absent";
-  btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
-  nameField.textContent = "";
-  timeField.textContent = "";
-}
 
+  dateInput.addEventListener('change', () => {
+  const changed_date = dateInput.value; // YYYY-MM-DD
 
-   get(student_all_otp_details).then(snapshot => {
-    let allData = snapshot.val();
+  for (let i = 1; i <= 7; i++) {
+    const btn = document.getElementById(`btn${i}`);
+    const nameField = document.getElementById(`name${i}`);
+    const timeField = document.getElementById(`time${i}`);
+
+    btn.textContent = "Absent";
+    btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
+    nameField.textContent = "";
+    timeField.textContent = "";
+  }
+
+  get(student_all_otp_details).then(snapshot => {
+    const allData = snapshot.val() || {};
     for (let key in allData) {
-      let entry = allData[key];
-      if (entry['rollno'] === rollno && entry['date']===formattedInputDate) {
-        const boxNumber = entry['boxNumber'];
-        const status = entry['status'];
-        if (status === "Present") {
+      const entry = allData[key];
+      if (entry.rollno === rollno && entry.date === changed_date) {
+        const boxNumber = entry.boxNumber;
+        if (entry.status === "Present") {
           const btn = document.getElementById(`btn${boxNumber}`);
           const nameField = document.getElementById(`name${boxNumber}`);
           const timeField = document.getElementById(`time${boxNumber}`);
-  
+
           btn.textContent = "Present";
           btn.style.backgroundColor = "green";
-  
-          nameField.textContent = entry['markedBy'];
-          timeField.textContent = entry['time'];
+          nameField.textContent = entry.markedBy;
+          timeField.textContent = entry.time;
         }
       }
     }
-
-});
+  });
 });
 
 </script>
+
 
