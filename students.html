@@ -156,6 +156,72 @@
   .fa-solid.fa-xmark {
     color: red;
   }
+  /* Responsive CSS for mobiles */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .container-2 {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .box {
+    width: 90%;
+    height: auto;
+    padding: 15px 10px;
+    font-size: 0.9rem;
+  }
+
+  .container-3 {
+    width: 95%;
+    gap: 5vh;
+    padding: 10px;
+  }
+
+  .otp-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .otpbox {
+    width: 12vw;
+    min-width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .btn-container {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .btn-container button {
+    width: 80%;
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .message {
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+}
+
 </style>
 
 <script type="module">
@@ -261,3 +327,4 @@ let formattedDate = `${day}-${month}-${year}`; // "2025-10-22"
     window.location.href = "view_attendance.html";
   });
 </script>
+
