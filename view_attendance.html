@@ -102,6 +102,61 @@
       .left b {
         color: #333;
       }
+      /* Existing styles remain the same */
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  input {
+    width: 95vw; /* make date picker fit smaller screens */
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .form {
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+  }
+
+  .container {
+    gap: 15px;
+  }
+
+  .box {
+    width: 95vw; /* full width on mobile */
+    padding: 8px;
+    grid-template-columns: 1fr auto;
+    font-size: 14px;
+  }
+
+  button {
+    width: 90px;
+    padding: 6px;
+    font-size: 13px;
+  }
+
+  h2 {
+    font-size: 18px;
+    padding: 5px;
+  }
+
+  .status {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .left, .right {
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .down {
+    margin-top: 10px;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -428,3 +483,4 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
+
