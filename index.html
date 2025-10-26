@@ -14,6 +14,54 @@
         box-sizing: border-box;
         font-family: "Roboto", sans-serif;
       }
+/* Existing styles remain the same */
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .icon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+
+  p {
+    font-size: 0.85em;
+  }
+
+  .options {
+    flex-direction: column;
+  }
+
+  .options button {
+    padding: 8px 0;
+    font-size: 0.85em;
+  }
+
+  .input-field input {
+    padding: 8px;
+    font-size: 0.85em;
+  }
+
+  .login-btn {
+    padding: 8px;
+    font-size: 0.9em;
+  }
+}
 
       body {
         height: 100vh;
@@ -261,3 +309,4 @@
     </script>
   </body>
 </html>
+
