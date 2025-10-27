@@ -256,7 +256,12 @@
 
   const today = new Date();
   const dateInput = document.getElementById("dateInput");
-  dateInput.value = today.toISOString().split('T')[0];
+  const dd = String(today.getDate()).padStart(2, '0');
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const yyyy = today.getFullYear();
+const formattedToday = `${dd}-${mm}-${yyyy}`;
+dateInput.value = `${yyyy}-${mm}-${dd}`;
+
   
 
 
@@ -322,7 +327,7 @@ function evaluateAndMark(timeStr, dateStr) {
         timeField.textContent = timeStr;
 
         // push to DB if needed
-        datas = {
+        let datas = {
             rollno: rollno,
             boxNumber: boxNumber,
             markedBy: teacher_email,
@@ -330,7 +335,9 @@ function evaluateAndMark(timeStr, dateStr) {
             status: "Present",
             date: dateStr
         };
-        push(student_all_otp_details, datas);
+        const recordPath = `student_day_wise_details/${rollno}_${dateStr}_${boxNumber}`;
+set(ref(database, recordPath), datas);
+
     }
 }
 
@@ -357,16 +364,20 @@ function markPresent(boxNumber) {
   btn.textContent = "Present";
   btn.style.backgroundColor = "green";
 
-  nameField.textContent = teacher_email;
-  timeField.textContent = time;
 
-   datas = {
+  const now = new Date();
+const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const currentDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
+timeField.textContent = currentTime;
+    nameField.textContent = teacher_email;
+
+   let datas = {
     rollno: rollno,
     boxNumber: boxNumber,
     markedBy: teacher_email,
-    time: time,
+    time: currentTime,
     status:"Present",
-    date:date
+    date:currentDate
    }
    push(student_all_otp_details, datas);
 }
