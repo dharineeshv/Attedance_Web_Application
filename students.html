@@ -156,78 +156,11 @@
   .fa-solid.fa-xmark {
     color: red;
   }
-  /* Responsive CSS for mobiles */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .container-2 {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .box {
-    width: 90%;
-    height: auto;
-    padding: 15px 10px;
-    font-size: 0.9rem;
-  }
-
-  .container-3 {
-    width: 95%;
-    gap: 5vh;
-    padding: 10px;
-  }
-
-  .otp-container {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .otpbox {
-    width: 12vw;
-    min-width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-
-  .btn-container {
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-
-  .btn-container button {
-    width: 80%;
-    font-size: 1rem;
-    padding: 10px;
-  }
-
-  .message {
-    flex-direction: column;
-    align-items: center;
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  h2 {
-    font-size: 1.2rem;
-    text-align: center;
-  }
-}
-
 </style>
 <script
   src="https://kit.fontawesome.com/6045d1d2eb.js"
   crossorigin="anonymous"
 ></script>
-
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
@@ -244,14 +177,16 @@
   };
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
+
   const student_otp_db = ref(database, "otp_by_student");
   const teacher_otp_db = ref(database, "teachers_otp");
+  const student_percentage_datas_db = ref(database, "student_percentage_details");
 
   const otpInputs = document.querySelectorAll(".otpbox");
   const markBtn = document.querySelector(".btn-container button:first-child");
   const status = document.querySelector(".message");
 
-  // Auto-focus inputs
+
   otpInputs.forEach((input, index) => {
     input.addEventListener("input", () => {
       if (input.value.length === 1 && index < otpInputs.length - 1)
@@ -274,21 +209,16 @@
 
     get(teacher_otp_db).then((snapshot) => {
 
-      const now = new Date();
+const now = new Date();
 const hours = now.getHours();
 const minutes = now.getMinutes();
-const ampm = hours >= 12 ? 'PM' : 'AM';
-const formattedHours = hours % 12 === 0 ? 12 : hours % 12; // convert 0 → 12
-const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-
-let time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
-
+let time = `${hours}:${minutes}`;
 
 let currentDate = new Date();
 let year = currentDate.getFullYear();
-let month = String(currentDate.getMonth() + 1).padStart(2, '0'); // months are 0-based
+let month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
 let day = String(currentDate.getDate()).padStart(2, '0');
-let formattedDate = `${day}-${month}-${year}`; // "2025-10-22"
+let formattedDate = `${day}-${month}-${year}`; 
 
 
       if (snapshot.exists()) {
@@ -308,7 +238,7 @@ let formattedDate = `${day}-${month}-${year}`; // "2025-10-22"
             name: name,
             rollno: rollno,
             students_otp: s_otp,
-            time: time12h,
+            time: time,
             date:formattedDate
           };
           push(student_otp_db, datas_student);
@@ -331,6 +261,17 @@ let formattedDate = `${day}-${month}-${year}`; // "2025-10-22"
   view.addEventListener("click", () => {
     window.location.href = "view_attendance.html";
   });
+   get(student_percentage_datas_db).then((snapshot) => {
+    let data = snapshot.val();
+    for (let key in data) {
+      let entry = data[key];
+      const rollno = sessionStorage.getItem("rollno");
+      if (entry['rollno'] === rollno) {
+        document.getElementById("box1").children[1].innerText = entry['totalPresent'];
+        document.getElementById("box2").children[1].innerText = entry['totalabsent'];
+        document.getElementById("box3").children[1].innerText = entry['percentage'] + "%";
+      }
+    }
+   })
+
 </script>
-
-
