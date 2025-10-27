@@ -317,7 +317,8 @@ absentButtons.forEach((btn) => {
   async function markManualAttendance(rollno, date, boxNumber, status,teacher_email) {
   // ✅ Format date like 27-10-2025
   const [yyyy, mm, dd] = date.split("-");
-  const formattedDate = `${dd}-${mm}-${yyyy}`;
+  const formattedDate = `${yyyy}-${mm}-${dd}`;
+
 
   // ✅ Format current time
   const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -332,3 +333,4 @@ absentButtons.forEach((btn) => {
   });
   }
 </script>
+
