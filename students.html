@@ -210,12 +210,9 @@
     get(teacher_otp_db).then((snapshot) => {
 
 const now = new Date();
-
 const hours = now.getHours();
 const minutes = now.getMinutes();
 let time = `${hours}:${minutes}`;
-
-
 
 let currentDate = new Date();
 let year = currentDate.getFullYear();
@@ -223,9 +220,10 @@ let month = String(currentDate.getMonth() + 1).padStart(2, '0');
 let day = String(currentDate.getDate()).padStart(2, '0');
 let formattedDate = `${day}-${month}-${year}`; 
 
-
+let teacherName = "";
       if (snapshot.exists()) {
         const data = snapshot.val();
+
         let found = false;
         let name, rollno, s_otp;
         for (let key in data) {
@@ -233,16 +231,19 @@ let formattedDate = `${day}-${month}-${year}`;
             name = sessionStorage.getItem("name");
             rollno = sessionStorage.getItem("Rollno");
             s_otp = data[key].otp;
+            teacherName = data[key].email;
             found = true;
           }
         }
         if (found) {
+          
           const datas_student = {
             name: name,
             rollno: rollno,
             students_otp: s_otp,
             time: time,
-            date:formattedDate
+            date:formattedDate,
+            markedBy: teacherName
           };
           push(student_otp_db, datas_student);
         }
@@ -271,12 +272,11 @@ let formattedDate = `${day}-${month}-${year}`;
       const rollno = sessionStorage.getItem("Rollno");
 
       if (entry['rollno'] === rollno) {
-        document.getElementById("box1").children[1].innerText = entry['totalDaysPresent'];
-        document.getElementById("box2").children[1].innerText = entry['totalDaysAbsent'];
+        document.getElementById("box1").children[1].innerText = entry['totalPresent'];
+        document.getElementById("box2").children[1].innerText = entry['totalabsent'];
         document.getElementById("box3").children[1].innerText = entry['percentage'] + "%";
       }
     }
    })
 
 </script>
-
