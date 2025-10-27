@@ -381,28 +381,41 @@ timeField.textContent = currentTime;
    }
    push(student_all_otp_details, datas);
 }
-
 onValue(student_all_otp_details, function(snapshot) {
   let allData = snapshot.val();
+  let selectedDate = dateInput.value; // e.g., "2025-10-27"
+  let [yyyy, mm, dd] = selectedDate.split("-");
+  let formattedSelectedDate = `${dd}-${mm}-${yyyy}`;
+
+  for (let i = 1; i <= 7; i++) {
+    const btn = document.getElementById(`btn${i}`);
+    const nameField = document.getElementById(`name${i}`);
+    const timeField = document.getElementById(`time${i}`);
+    btn.textContent = "Absent";
+    btn.style.backgroundColor = "rgba(250, 5, 5, 0.832)";
+    nameField.textContent = "";
+    timeField.textContent = "";
+  }
+
   for (let key in allData) {
     let entry = allData[key];
-    if (entry['rollno'] === rollno) {
+    if (entry['rollno'] === rollno && entry['date'] === formattedSelectedDate) {
       const boxNumber = entry['boxNumber'];
-      const status = entry['status'];
-      if (status === "Present") {
+      if (entry['status'] === "Present") {
         const btn = document.getElementById(`btn${boxNumber}`);
         const nameField = document.getElementById(`name${boxNumber}`);
         const timeField = document.getElementById(`time${boxNumber}`);
 
         btn.textContent = "Present";
         btn.style.backgroundColor = "green";
-
         nameField.textContent = entry['markedBy'];
         timeField.textContent = entry['time'];
       }
     }
   }
 });
+
+
 dateInput.addEventListener('change',()=>
 {
  let changed_date = dateInput.value;
@@ -445,3 +458,4 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
+
