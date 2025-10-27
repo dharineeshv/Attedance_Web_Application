@@ -253,6 +253,7 @@
   const student_otp_db = ref(database, "otp_by_student");
   const student_all_otp_details = ref(database, "student_day_wise_details");
   const teacher_otp_db = ref(database, "teachers_otp");
+  const student_percentage_datas_db = ref(database, "student_percentage_details");
 
   const today = new Date();
   const dateInput = document.getElementById("dateInput");
@@ -405,15 +406,45 @@ onValue(student_all_otp_details, function(snapshot) {
         const btn = document.getElementById(`btn${boxNumber}`);
         const nameField = document.getElementById(`name${boxNumber}`);
         const timeField = document.getElementById(`time${boxNumber}`);
-
+         
         btn.textContent = "Present";
         btn.style.backgroundColor = "green";
         nameField.textContent = entry['markedBy'];
         timeField.textContent = entry['time'];
+
       }
     }
   }
+  
+  let total_Present = 0;
+  let uniqueDates = new Set();
+
+  for (let key in allData) {
+    let entry = allData[key];
+    if (entry['rollno'] === rollno) {
+      if (entry['status'] === "Present") total_Present++;
+      uniqueDates.add(entry['date']);
+    }
+  }
+
+  
+  let total_Days = uniqueDates.size;
+  let total_Classes = total_Days * 7;
+  let total_Absent = total_Classes - total_Present;
+  let attendancePercentage = total_Classes > 0 ? (total_Present / total_Classes) * 100 : 0;
+
+
+  let percentage_data = {
+    rollno: rollno,
+    totalabsent: total_Absent,
+    totalPresent: total_Present,
+    totalDays: total_Days,
+    percentage: attendancePercentage.toFixed(2)
+  };
+
+    set(ref(database, "student_percentage_details/" + rollno), percentage_data);
 });
+
 
 
 dateInput.addEventListener('change',()=>
@@ -458,4 +489,3 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
-
