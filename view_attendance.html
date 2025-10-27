@@ -367,7 +367,8 @@ function markPresent(boxNumber) {
 
 
   const now = new Date();
-const currentTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const currentTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+
 const currentDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-${now.getFullYear()}`;
 timeField.textContent = currentTime;
     nameField.textContent = teacher_email;
@@ -416,33 +417,52 @@ onValue(student_all_otp_details, function(snapshot) {
     }
   }
   
-  let total_Present = 0;
-  let uniqueDates = new Set();
+  let allDates = {}; // to group attendance by date
 
-  for (let key in allData) {
-    let entry = allData[key];
-    if (entry['rollno'] === rollno) {
-      if (entry['status'] === "Present") total_Present++;
-      uniqueDates.add(entry['date']);
-    }
+for (let key in allData) {
+  let entry = allData[key];
+  if (entry['rollno'] === rollno) {
+    const date = entry['date'];
+    const box = Number(entry['boxNumber']);
+    const status = entry['status'];
+
+    if (!allDates[date]) allDates[date] = { morning: [], afternoon: [] };
+
+    // Categorize into morning or afternoon
+    if (box >= 1 && box <= 4) allDates[date].morning.push(status);
+    else if (box >= 5 && box <= 7) allDates[date].afternoon.push(status);
   }
+}
 
-  
-  let total_Days = uniqueDates.size;
-  let total_Classes = total_Days * 7;
-  let total_Absent = total_Classes - total_Present;
-  let attendancePercentage = total_Classes > 0 ? (total_Present / total_Classes) * 100 : 0;
+let totalDaysHeld = Object.keys(allDates).length;
+let totalDaysPresent = 0; // 
 
+for (let date in allDates) {
+  let { morning, afternoon } = allDates[date];
 
-  let percentage_data = {
-    rollno: rollno,
-    totalabsent: total_Absent,
-    totalPresent: total_Present,
-    totalDays: total_Days,
-    percentage: attendancePercentage.toFixed(2)
-  };
+  let morningPresent = morning.length === 4 && morning.every(s => s === "Present");
+  let afternoonPresent = afternoon.length === 3 && afternoon.every(s => s === "Present");
 
-    set(ref(database, "student_percentage_details/" + rollno), percentage_data);
+  if (morningPresent && afternoonPresent) totalDaysPresent += 1;       // 100%
+  else if (morningPresent || afternoonPresent) totalDaysPresent += 0.5; // 50%
+  else totalDaysPresent += 0;                                          // 0%
+}
+
+let totalDaysAbsent = totalDaysHeld - Math.floor(totalDaysPresent);
+let attendancePercentage = totalDaysHeld > 0 
+  ? (totalDaysPresent / totalDaysHeld) * 100 
+  : 0;
+
+let percentage_data = {
+  rollno: rollno,
+  totalDaysHeld: totalDaysHeld,
+  totalDaysPresent: totalDaysPresent,
+  totalDaysAbsent: totalDaysAbsent,
+  percentage: attendancePercentage.toFixed(2)
+};
+
+set(ref(database, "student_percentage_details/" + rollno), percentage_data);
+
 });
 
 
