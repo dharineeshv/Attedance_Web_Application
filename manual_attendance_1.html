@@ -224,17 +224,12 @@
     </div>
 
   </div>
-<script type="module">
-  
+  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
   import {
     getDatabase,
     ref,
-    set,
-    onValue,
-    get,
-    push,
-    update
+    update,
   } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
   const appSetting = {
@@ -243,10 +238,9 @@
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
 
-  const student_all_otp_details = ref(database, "student_day_wise_details");
-  
-
   const dateInput = document.getElementById("dateInput");
+
+  // Auto-fill today’s date
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, "0");
@@ -254,43 +248,56 @@
   const formattedDate = `${year}-${month}-${day}`;
   dateInput.value = formattedDate;
 
-   const presentButtons = document.querySelectorAll("button.present");
-   
-   
+  const presentButtons = document.querySelectorAll("button.present");
+  const absentButtons = document.querySelectorAll("button:not(.present)");
 
-  // Add click listener to each
-  presentButtons.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-       const clickedBtn = e.target;
-    const buttonId = clickedBtn.id;
+  // 🔹 Common function to update attendance
+  async function updateAttendance(rollno, date, boxNumber, status, teacher_email, box) {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const updateRef = ref(database, `student_day_wise_details/${date}/${rollno}/period${boxNumber}`);
 
-    // Find the parent box for this button
-    const box = clickedBtn.closest(".box");
-
-    // Find the specific left and right sections inside this box
-    const leftDiv = box.querySelector(".left");
-    const rightDiv = box.querySelector(".right");
-  const rollno = sessionStorage.getItem("rollno");
-  const date = dateInput.value;
-  const teacher_email = sessionStorage.getItem("email");
-  const boxNumber = buttonId.replace("p", ""); // e.g. 1p → 1
-  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-   const updateRef = ref(database, `student_day_wise_details/${date}/${rollno}/period${boxNumber}`);
-
-    // ✅ Update data in Firebase
+    // ✅ Update Firebase
     await update(updateRef, {
-      status: "Present",
+      status: status,
       time: time,
       markedBy: teacher_email
     });
 
-    // ✅ Update UI instantly
+    // ✅ Update UI
+    const leftDiv = box.querySelector(".left");
+    const rightDiv = box.querySelector(".right");
     leftDiv.innerHTML = `<p>Marked by:</p><b>${teacher_email}</b>`;
     rightDiv.innerHTML = `<p>Time:</p><b>${time}</b>`;
+  }
 
-    // ✅ Optional visual cue
-    clickedBtn.classList.add("present");
+  // ✅ Present Button Handler
+  presentButtons.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const clickedBtn = e.target;
+      const box = clickedBtn.closest(".box");
+      const rollno = sessionStorage.getItem("rollno");
+      const date = dateInput.value;
+      const teacher_email = sessionStorage.getItem("email");
+      const boxNumber = clickedBtn.id.replace("p", ""); // e.g. 1p → 1
+
+      await updateAttendance(rollno, date, boxNumber, "Present", teacher_email, box);
+      clickedBtn.classList.add("present");
+    });
+  });
+
+  // ✅ Absent Button Handler
+  absentButtons.forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const clickedBtn = e.target;
+      const box = clickedBtn.closest(".box");
+      const rollno = sessionStorage.getItem("rollno");
+      const date = dateInput.value;
+      const teacher_email = sessionStorage.getItem("email");
+      const boxNumber = clickedBtn.id.replace("a", ""); // e.g. 1a → 1
+
+      await updateAttendance(rollno, date, boxNumber, "Absent", teacher_email, box);
+      clickedBtn.classList.remove("present");
     });
   });
 </script>
+
