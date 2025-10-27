@@ -210,9 +210,12 @@
     get(teacher_otp_db).then((snapshot) => {
 
 const now = new Date();
-const hours = now.getHours();
-const minutes = now.getMinutes();
-let time = `${hours}:${minutes}`;
+const time = now.toLocaleTimeString('en-US', {
+  hours: '2-digit',
+  minutes: '2-digit',
+  hour12: true
+});
+
 
 let currentDate = new Date();
 let year = currentDate.getFullYear();
@@ -276,4 +279,5 @@ let formattedDate = `${day}-${month}-${year}`;
    })
 
 </script>
+
 
