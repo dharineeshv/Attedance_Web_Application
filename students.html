@@ -268,11 +268,12 @@ let formattedDate = `${day}-${month}-${year}`;
       const rollno = sessionStorage.getItem("Rollno");
 
       if (entry['rollno'] === rollno) {
-        document.getElementById("box1").children[1].innerText = entry['totalPresent'];
-        document.getElementById("box2").children[1].innerText = entry['totalabsent'];
+        document.getElementById("box1").children[1].innerText = entry['totalDaysPresent'];
+        document.getElementById("box2").children[1].innerText = entry['totalDaysAbsent'];
         document.getElementById("box3").children[1].innerText = entry['percentage'] + "%";
       }
     }
    })
 
 </script>
+
