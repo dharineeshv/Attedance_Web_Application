@@ -247,6 +247,7 @@ let teacherName = "";
             markedBy: teacherName
           };
           push(student_otp_db, datas_student);
+          sessionStorage.setItem("teacher_names",teacherName);
         }
 
         if (found) {
@@ -281,3 +282,4 @@ let teacherName = "";
    })
 
 </script>
+
