@@ -149,16 +149,13 @@
   </div>
   <div class="details">
      <button id=date-button>
-        <p class="day">13</p>
-        <p class="month">SEP</p>
+       
     </button>
     <div class="inner-content">
-         <b id="time">11:30 AM to 11:50 AM</b>
-         <p>Attendance Pass</p>
-         <p id="purpose"></p>
+        
     </div>
     
-    <button id="btn">Expired</button>
+    <button id="btn"></button>
   </div>
 
   <button class="plus-btn">
@@ -206,59 +203,63 @@
   let purpose =  document.querySelector('#purpose');
   
 
-  get(student_movement_pass_db).then((snapshot) => {
+ get(student_movement_pass_db).then((snapshot) => {
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    content_class.innerHTML = ""; // clear old message
     let found = false;
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      for (let key in data) {
-        let pass = data[key];
-        if (pass.rollno === student_roll_no) {
-          found = true;
-          content_class.style.display = "none";
-          details_class.style.display = "flex";
-          
-          // display data
-          day.innerHTML = pass.day;
-          month.innerHTML = pass.month;
-          time.innerHTML = `${pass.start_hour}:${pass.start_minute} ${pass.period1} to ${pass.end_hour}:${pass.end_minute} ${pass.period2}`;
-          purpose.innerHTML = pass.purpose;
 
-          // check expiry
-          let now = new Date();
-          let currentHr = now.getHours();
-          let currentMin = now.getMinutes();
+    for (let key in data) {
+      const pass = data[key];
+      if (pass.rollno === student_roll_no) {
+        found = true;
 
-          let endHr = parseInt(pass.end_hour);
-          let endMin = parseInt(pass.end_minute);
+        // create a new div for each record
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "details";
+        detailsDiv.style.display = "flex";
 
-          let currentTotal = currentHr * 60 + currentMin;
-          let endTotal = endHr * 60 + endMin;
+        // set content
+        detailsDiv.innerHTML = `
+          <button id="date-button">
+            <p class="day">${pass.day}</p>
+            <p class="month">${pass.month}</p>
+          </button>
+          <div class="inner-content">
+            <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
+            <p>Attendance Pass</p>
+            <p id="purpose">${pass.purpose}</p>
+          </div>
+          <button id="btn">${pass.status}</button>
+        `;
 
-          if (currentTotal >= endTotal && pass.status === "active") {
-            // ⏰ Expired — update in database
-            const passRef = ref(database, "student_movement_pass_details/" + key);
-            update(passRef, { status: "expired" });
-            btn.style.backgroundColor = "red";
-            btn.innerHTML = "Expired";
-          } 
-          else if (pass.status === "active") {
-            btn.style.backgroundColor = "green";
-            btn.innerHTML = "Active";
-          } 
-          else if (pass.status === "expired") {
-            btn.style.backgroundColor = "red";
-            btn.innerHTML = "Expired";
-          }
+        // set status color
+        let btn = detailsDiv.querySelector("#btn");
+        if (pass.status === "active") {
+          btn.style.backgroundColor = "green";
+        } else {
+          btn.style.backgroundColor = "red";
         }
-      }
 
-      if (!found) {
-        content_class.style.display = "flex";
+        // when clicked → store key and go to next page
+        detailsDiv.addEventListener("click", () => {
+          sessionStorage.setItem("selectedPassKey", key);
+          window.location.href = "movement_pass_1.html";
+        });
+
+        // append to content
+        content_class.appendChild(detailsDiv);
       }
-    } else {
-      content_class.style.display = "flex";
     }
-  });
+
+    if (!found) {
+      content_class.innerHTML = `<p style="color:#555;">No passes found.</p>`;
+    }
+  } else {
+    content_class.innerHTML = `<p style="color:#555;">No movement pass data available.</p>`;
+  }
+});
+
   
 
 </script>
