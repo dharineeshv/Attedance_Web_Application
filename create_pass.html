@@ -293,6 +293,8 @@ if(end_hr >= 12)
   ];
   let date = time.getDate();
   let month = time.getMonth();
+  let year = time.getFullYear();
+  
   let month_name = month_array[month];
 
 
@@ -316,7 +318,8 @@ if(end_hr >= 12)
         month: month_name,
         status:"active",
         period1:period1,
-        period2:period2
+        period2:period2,
+        year:year
       };
       push(student_movement_pass_db,datas)
     .then(() => {
