@@ -336,8 +336,10 @@ function evaluateAndMark(timeStr, dateStr) {
             status: "Present",
             date: dateStr
         };
-        const recordPath = `student_day_wise_details/${rollno}_${dateStr}_${boxNumber}`;
+      const recordPath = `student_day_wise_details/${rollno}_${dateStr}_${boxNumber}`;
 set(ref(database, recordPath), datas);
+push(student_all_otp_details, datas); // ✅ also push to the list you display from
+
 
     }
 }
@@ -388,9 +390,9 @@ timeField.textContent = currentTime;
    }
    push(student_all_otp_details, datas);
 }
-onValue(student_all_otp_details, function(snapshot) {
+onValue(ref(database, "student_day_wise_details"), function(snapshot) {
   let allData = snapshot.val();
-  let selectedDate = dateInput.value; // e.g., "2025-10-27"
+  let selectedDate = dateInput.value; 
   let [yyyy, mm, dd] = selectedDate.split("-");
   let formattedSelectedDate = `${dd}-${mm}-${yyyy}`;
 
@@ -514,3 +516,4 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
+
