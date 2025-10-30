@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="nav-container">
+      <i class="fa-solid fa-arrow-left" id="left-arrow"></i>
+      <h2>Create Movement Pass</h2>
+    </div>
+    <div class="container">
+      <div class="inner-container-1">
+        <i class="fa-regular fa-address-card"></i>
+        <h2>Create New Pass</h2>
+        <b>Fill in the details below to create a new pass.</b>
+      </div>
+      <div class="inner-container-2">
+        <div class="inner-container-2-1">
+          <i class="fa-solid fa-clock"></i>
+          <b>Timing</b>
+        </div>
+
+        <div class="inner-container-2-2">
+          <input type="time" />
+        </div>
+      </div>
+      <div class="inner-container-3">
+        <div class="inner-container-3-1">
+          <i class="fa-regular fa-file"></i>
+          <b>Purpose</b>
+        </div>
+        <div class="inner-container-3-2">
+          <textarea
+            name="purpose"
+            id="textarea"
+            placeholder="Enter The Purpose Of Your Movement..."
+          ></textarea>
+        </div>
+      </div>
+      <div class="inner-container-4">
+        <button>Submit Pass Request</button>
+      </div>
+    </div>
+  </body>
+</html>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+/>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+  }
+  body {
+    background: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background-color: #8a00ff;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .nav-container i {
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .nav-container i:hover {
+    transform: translateX(-3px);
+  }
+
+  .nav-container h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+    padding: 80px 10px 10px;
+  }
+  .inner-container-1 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid black;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+  }
+  .fa-regular.fa-address-card {
+    color: #8a00ff;
+    font-size: 2.5rem;
+  }
+  .fa-solid.fa-clock {
+    color: #8a00ff;
+  }
+  .fa-regular.fa-regular.fa-file {
+    color: #8a00ff;
+  }
+  .inner-container-2 {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    justify-content: flex-start;
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    flex-direction: column;
+  }
+  .inner-container-2-1 {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+  .inner-container-2-2 input {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.264);
+    border-radius: 5px;
+  }
+  .inner-container-3 {
+    display: flex;
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .inner-container-3-1 {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+  }
+  .inner-container-3-2 {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 7px;
+    border-radius: 5px;
+  }
+  .inner-container-3-2 textarea {
+    height: 20vh;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.264);
+  }
+  .inner-container-4 {
+    display: flex;
+
+    justify-content: center;
+    border-radius: 10px;
+    padding: 30px;
+  }
+  button {
+    padding: 15px;
+    background-color: #8a00ff;
+    border: none;
+    width: 50%;
+    border-radius: 10px;
+    font-weight: 600;
+    color: white;
+  }
+  textarea {
+    padding: 10px;
+    outline: none;
+  }
+  input {
+    outline: none;
+  }
+  button:hover {
+    transform: translateX(-3px);
+  }
+  button {
+    position: fixed;
+  }
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    get,
+    push,
+    update,
+  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+  const appSetting = {
+    databaseURL:
+      "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+  };
+  const app = initializeApp(appSetting);
+  const database = getDatabase(app);
+
+  const student_movement_pass_db = ref(
+    database,
+    "student_movement_pass_details"
+  );
+
+  let back = document.querySelector("#left-arrow");
+  back.addEventListener("click", () => {
+    window.location.href = "movement_pass.html";
+  });
+
+  let time = new Date();
+
+  //time
+  let start_hour = time.getHours();
+  let start_minute = time.getMinutes();
+ 
+  let time_input = document.querySelector("input");
+  let format = (num) => num.toString().padStart(2, "0");
+  let live_time = `${format(start_hour)}:${format(start_minute)}`;
+  time_input.value = live_time;
+
+
+  let end_hr = start_hour;
+  let end_minute = start_minute + 20;
+
+  // handle minute overflow
+  if (end_minute >= 60) {
+    end_minute -= 60;
+    end_hr += 1;
+  }
+
+  // handle 24-hour format rollover
+  if (end_hr >= 24) {
+    end_hr = 0;
+  }
+
+  start_hour = `${format(start_hour)}`;
+  start_minute = `${format(start_minute)}`;
+  end_hr = `${format(end_hr)}`;
+  end_minute = `${format(end_minute)}`;
+ let period1 = "";
+ let period2 = "";
+  if(start_hr >= 12)
+  {
+    period1 = "PM";
+  }
+  else{
+    period1 = "AM";
+  }
+if(end_hr >= 12)
+ {
+    period2 = "PM";
+  }
+  else{
+    period2 = "AM";
+}
+  //date
+  let month_array = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+  let date = time.getDate();
+  let month = time.getMonth();
+  let month_name = month_array[month];
+
+
+  let submit_btn = document.querySelector("button");
+  
+  submit_btn.addEventListener("click", () => {
+    let purpose = document.querySelector("#textarea").value.trim();
+    const rollno = sessionStorage.getItem("Rollno");
+    const name = sessionStorage.getItem("name");
+    if (purpose.length >= 6) {
+      let datas = {
+        rollno: rollno,
+        name: name,
+        purpose: purpose,
+        start_hour:start_hour,
+        end_hour:end_hr,
+        start_minute:start_minute,
+        end_minute:end_minute,
+        day: date,
+        month: month_name,
+        status:"active",
+        period1:period1,
+        period2:period2
+      };
+      push(student_movement_pass_db,datas);
+      window.location.href = "movement_pass.html"
+    }
+   
+    else{
+        alert("Please Enter Minimum character of 6 in purpose!!!")
+    }
+  });
+</script>
