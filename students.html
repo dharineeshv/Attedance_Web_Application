@@ -41,6 +41,7 @@
       <div class="btn-container">
         <button>Mark Attendance</button>
         <button id="view">View Attendance</button>
+        <button id="pass">Movement Pass</button> 
       </div>
     </div>
   </body>
@@ -197,7 +198,7 @@
         otpInputs[index - 1].focus();
     });
   });
-
+  
   markBtn.addEventListener("click", () => {
     let student_otp = "";
     otpInputs.forEach((input) => (student_otp += input.value));
@@ -279,7 +280,13 @@ let teacherName = "";
         document.getElementById("box3").children[1].innerText = entry['percentage'] + "%";
       }
     }
-   })
+   });
+  let pass_btn = document.querySelector("#pass");
+  pass_btn.addEventListener("click", () => {
+    window.location.href = "movement_pass.html";
+  });
+  
 
 </script>
+
 
