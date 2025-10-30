@@ -196,12 +196,9 @@ get(passRef).then(snapshot => {
     let purpose = document.getElementById("purpose");
   if (snapshot.exists()) {
     const data = snapshot.val();
-    for(let k in data)
-      {
-        purpose.innerText = data[k].purpose;
-        date.innerText = `${data[k].day} ${data[k].month} ${data[k].year}`;
-        time.innerHTML = `${data[k].start_hour}:${data[k].start_minute} ${data[k].period1} to ${data[k].end_hour}:${data[k].end_minute} ${data[k].period2}`;
-      }
+     purpose.innerText = data.purpose;
+    date.innerText = `${data.day} ${data.month} ${data.year}`;
+    time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
   }
 });
 
@@ -238,3 +235,4 @@ rollnoElement.innerText = rollno;
 
 
 </script>
+
