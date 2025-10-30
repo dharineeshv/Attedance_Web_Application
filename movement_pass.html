@@ -201,10 +201,10 @@
   let purpose =  document.querySelector('#purpose');
   
 
- get(student_movement_pass_db).then((snapshot) => {
+onValue(student_movement_pass_db, (snapshot) => {
   if (snapshot.exists()) {
     const data = snapshot.val();
-    content_class.innerHTML = ""; // clear old message
+    content_class.innerHTML = "";
     let found = false;
 
     for (let key in data) {
@@ -212,40 +212,57 @@
       if (pass.rollno === student_roll_no) {
         found = true;
 
-        // create a new div for each record
+        // create card for this pass
         const detailsDiv = document.createElement("div");
         detailsDiv.className = "details";
         detailsDiv.style.display = "flex";
-
-        // set content
+    
         detailsDiv.innerHTML = `
           <button id="date-button">
             <p class="day">${pass.day}</p>
             <p class="month">${pass.month}</p>
           </button>
           <div class="inner-content">
-            <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
+            <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} 
+              to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
             <p>Attendance Pass</p>
             <p id="purpose">${pass.purpose}</p>
           </div>
           <button id="btn">${pass.status}</button>
         `;
 
-        // set status color
-        let btn = detailsDiv.querySelector("#btn");
-        if (pass.status === "active") {
-          btn.style.backgroundColor = "green";
-        } else {
+        const btn = detailsDiv.querySelector("#btn");
+
+        // 🕒 Check if expired
+        let now = new Date();
+        let currentHr = now.getHours();
+        let currentMin = now.getMinutes();
+        let endHr = parseInt(pass.end_hour);
+        let endMin = parseInt(pass.end_minute);
+
+        let currentTotal = currentHr * 60 + currentMin;
+        let endTotal = endHr * 60 + endMin;
+
+        if (currentTotal >= endTotal && pass.status === "active") {
+          // ⏰ Update Firebase to expired
+          const passRef = ref(database, "student_movement_pass_details/" + key);
+          update(passRef, { status: "expired" });
           btn.style.backgroundColor = "red";
+          btn.innerHTML = "Expired";
+        } else if (pass.status === "active") {
+          btn.style.backgroundColor = "green";
+          btn.innerHTML = "Active";
+        } else if (pass.status === "expired") {
+          btn.style.backgroundColor = "red";
+          btn.innerHTML = "Expired";
         }
 
-        // when clicked → store key and go to next page
+        // 🎯 Click to view
         detailsDiv.addEventListener("click", () => {
           sessionStorage.setItem("selectedPassKey", key);
           window.location.href = "movement_pass_1.html";
         });
 
-        // append to content
         content_class.appendChild(detailsDiv);
       }
     }
@@ -257,6 +274,7 @@
     content_class.innerHTML = `<p style="color:#555;">No movement pass data available.</p>`;
   }
 });
+
 
   
 
