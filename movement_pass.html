@@ -129,6 +129,11 @@
     font-weight: 500;
     color:#555
 }
+.details:hover
+{
+   transform: scale(1.1);
+      box-shadow: 0 8px 20px rgba(138, 0, 255, 0.5);
+}
   </style>
 </head>
 <body>
@@ -163,106 +168,97 @@
 </html>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  get,
-  update
-} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+  import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    get,
+    push,
+    update
+  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-const appSetting = {
-  databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
-};
-const app = initializeApp(appSetting);
-const database = getDatabase(app);
-const student_movement_pass_db = ref(database, "student_movement_pass_details");
+  const appSetting = {
+    databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+  };
+  const app = initializeApp(appSetting);
+  const database = getDatabase(app);
 
-document.querySelector(".fa-arrow-left").addEventListener("click", () => {
-  window.history.back();
-});
+  const student_movement_pass_db = ref(database, "student_movement_pass_details");
 
-document.querySelector(".plus-btn").addEventListener("click", () => {
-  window.location.href = "create_pass.html";
-});
+  document.querySelector(".fa-arrow-left").addEventListener("click", () => {
+    window.history.back();
+  });
 
-const student_roll_no = sessionStorage.getItem("Rollno");
-const passList = document.getElementById("passList");
+  let plusBtn = document.querySelector(".plus-btn");
+  plusBtn.addEventListener("click", () => {
+    window.location.href = "create_pass.html";    
+  });
 
-get(student_movement_pass_db).then((snapshot) => {
-  if (snapshot.exists()) {
-    const data = snapshot.val();
+  let content_class = document.querySelector('.content');
+  let details_class = document.querySelector('.details');
+  const student_roll_no = sessionStorage.getItem("Rollno");
+  
+  let day = document.querySelector('.day');
+  let month = document.querySelector('.month');
+  let time = document.querySelector('#time');
+  let btn = document.querySelector('#btn');
+  let purpose =  document.querySelector('#purpose');
+  
+
+  get(student_movement_pass_db).then((snapshot) => {
     let found = false;
-    passList.innerHTML = ""; // clear old message
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      for (let key in data) {
+        let pass = data[key];
+        if (pass.rollno === student_roll_no) {
+          found = true;
+          content_class.style.display = "none";
+          details_class.style.display = "flex";
+          
+          // display data
+          day.innerHTML = pass.day;
+          month.innerHTML = pass.month;
+          time.innerHTML = `${pass.start_hour}:${pass.start_minute} ${pass.period1} to ${pass.end_hour}:${pass.end_minute} ${pass.period2}`;
+          purpose.innerHTML = pass.purpose;
 
-    for (let key in data) {
-      let pass = data[key];
-      if (pass.rollno === student_roll_no) {
-        found = true;
+          // check expiry
+          let now = new Date();
+          let currentHr = now.getHours();
+          let currentMin = now.getMinutes();
 
-        // Create the details div dynamically
-        const detailsDiv = document.createElement("div");
-        detailsDiv.className = "details";
-        detailsDiv.style.display = "flex";
+          let endHr = parseInt(pass.end_hour);
+          let endMin = parseInt(pass.end_minute);
 
-        // compute expiry
-        let now = new Date();
-        let currentHr = now.getHours();
-        let currentMin = now.getMinutes();
-        let endHr = parseInt(pass.end_hour);
-        let endMin = parseInt(pass.end_minute);
-        let currentTotal = currentHr * 60 + currentMin;
-        let endTotal = endHr * 60 + endMin;
-        let status = pass.status;
+          let currentTotal = currentHr * 60 + currentMin;
+          let endTotal = endHr * 60 + endMin;
 
-        if (currentTotal >= endTotal && pass.status === "active") {
-          const passRef = ref(database, "student_movement_pass_details/" + key);
-          update(passRef, { status: "expired" });
-          status = "expired";
+          if (currentTotal >= endTotal && pass.status === "active") {
+            // ⏰ Expired — update in database
+            const passRef = ref(database, "student_movement_pass_details/" + key);
+            update(passRef, { status: "expired" });
+            btn.style.backgroundColor = "red";
+            btn.innerHTML = "Expired";
+          } 
+          else if (pass.status === "active") {
+            btn.style.backgroundColor = "green";
+            btn.innerHTML = "Active";
+          } 
+          else if (pass.status === "expired") {
+            btn.style.backgroundColor = "red";
+            btn.innerHTML = "Expired";
+          }
         }
-
-        // status color
-        let color = status === "active" ? "green" : "red";
-
-        // date button
-        const dateButton = document.createElement("button");
-        dateButton.id = "date-button";
-        dateButton.innerHTML = `<p class="day">${pass.day}</p><p class="month">${pass.month}</p>`;
-
-        // inner content
-        const inner = document.createElement("div");
-        inner.className = "inner-content";
-        inner.innerHTML = `
-          <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
-          <p>Attendance Pass</p>
-          <p id="purpose">${pass.purpose}</p>
-        `;
-
-        // status button
-        const statusBtn = document.createElement("button");
-        statusBtn.id = "btn";
-        statusBtn.style.backgroundColor = color;
-        statusBtn.innerText = status.charAt(0).toUpperCase() + status.slice(1);
-
-        // when user clicks this record, store key in sessionStorage
-        detailsDiv.addEventListener("click", () => {
-          sessionStorage.setItem("selectedPassKey", key);
-          window.location.href = "movement_pass_1.html";
-        });
-
-        // append all
-        detailsDiv.appendChild(dateButton);
-        detailsDiv.appendChild(inner);
-        detailsDiv.appendChild(statusBtn);
-        passList.appendChild(detailsDiv);
       }
-    }
 
-    if (!found) {
-      passList.innerHTML = `<p style="color:#555;">No passes found for your account.</p>`;
+      if (!found) {
+        content_class.style.display = "flex";
+      }
+    } else {
+      content_class.style.display = "flex";
     }
-  } else {
-    passList.innerHTML = `<p style="color:#555;">No movement pass data available.</p>`;
-  }
-});
+  });
+  
 
 </script>
