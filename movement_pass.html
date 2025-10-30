@@ -84,6 +84,8 @@
     .content {
         display:flex;
       flex: 1;
+      flex-direction: column;  /* 👈 add this line */
+    gap: 15px;   
        padding: 100px 20px 20px;
     }
     .details {
@@ -132,7 +134,7 @@
 .details:hover
 {
    transform: scale(1.1);
-      box-shadow: 0 8px 20px rgba(138, 0, 255, 0.5);
+    
 }
   </style>
 </head>
