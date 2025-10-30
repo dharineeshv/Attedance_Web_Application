@@ -154,16 +154,16 @@
     </div>
     <div class="container-3">
            <div class="c1">
-                <b>Date </b>
-                <p>13 SEP 2025</p>
+                <b >Date </b>
+                <p id="date">13 SEP 2025</p>
            </div>
            <div class="c1">
                 <b>Time </b>
-                <p>11:30 AM to 11:50 AM</p>
+                <p id="time">11:30 AM to 11:50 AM</p>
            </div>
            <div class="c1">
             <b>Purpose</b>
-            <p>Going to cls</p>
+            <p id="purpose">Going to cls</p>
            </div>
     </div>
    
@@ -188,8 +188,22 @@
   };
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
-
-  const student_movement_pass_db = ref(database, "student_movement_pass_details");
+ let key = sessionStorage.getItem('selectedPassKey');
+ const passRef = ref(database, "student_movement_pass_details/" + key);
+get(passRef).then(snapshot => {
+    let date = document.getElementById("date");
+    let time = document.getElementById("time");
+    let purpose = document.getElementById("purpose");
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    for(let k in data)
+      {
+        purpose.innerText = data[k].purpose;
+        date.innerText = `${data[k].day} ${data[k].month} ${data[k].year}`;
+        time.innerHTML = `${data[k].start_hour}:${data[k].start_minute} ${data[k].period1} to ${data[k].end_hour}:${data[k].end_minute} ${data[k].period2}`;
+      }
+  }
+});
 
   document.querySelector(".fa-arrow-left").addEventListener("click", () => {
     window.history.back();
@@ -220,7 +234,7 @@ let rollnoElement = document.getElementById("rollno");
 let deptElement = document.getElementById("dept");
 deptElement.innerText = department;
 rollnoElement.innerText = rollno;
-let key = sessionStorage.getItem("pass_key");
+
 
 
 </script>
