@@ -302,6 +302,7 @@ dateInput.value = `${yyyy}-${mm}-${dd}`;
   }
 
 function evaluateAndMark(timeStr, dateStr) {
+ let teachername =  sessionStorage.getItem("teacher_names");
     const hm = parseTimeToHM(timeStr);
     if (!hm) return;
 
@@ -516,4 +517,5 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
+
 
