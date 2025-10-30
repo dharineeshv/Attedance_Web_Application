@@ -199,6 +199,12 @@ get(passRef).then(snapshot => {
      purpose.innerText = data.purpose;
     date.innerText = `${data.day} ${data.month} ${data.year}`;
     time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
+    if(data.status === "expired") {
+        document.querySelector("button").innerText = "Expired";
+    } else {
+        document.querySelector("button").innerText = "Active";
+        document.querySelector("button").style.backgroundColor = "green";
+    }
   }
 });
 
@@ -235,4 +241,3 @@ rollnoElement.innerText = rollno;
 
 
 </script>
-
