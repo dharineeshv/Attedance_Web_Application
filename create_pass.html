@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="inner-container-4">
-        <button>Submit Pass Request</button>
+        <button id="button">Submit Pass Request</button>
       </div>
     </div>
   </body>
@@ -198,7 +198,7 @@
     transform: translateX(-3px);
   }
   button {
-    position: fixed;
+    position: relative;
   }
 </style>
 <script type="module">
@@ -262,7 +262,7 @@
   end_minute = `${format(end_minute)}`;
  let period1 = "";
  let period2 = "";
-  if(start_hr >= 12)
+  if(start_hour >= 12)
   {
     period1 = "PM";
   }
@@ -296,9 +296,10 @@ if(end_hr >= 12)
   let month_name = month_array[month];
 
 
-  let submit_btn = document.querySelector("button");
+  let submit_btn = document.querySelector("#button");
   
   submit_btn.addEventListener("click", () => {
+    console.log("clicked")
     let purpose = document.querySelector("#textarea").value.trim();
     const rollno = sessionStorage.getItem("Rollno");
     const name = sessionStorage.getItem("name");
@@ -317,8 +318,15 @@ if(end_hr >= 12)
         period1:period1,
         period2:period2
       };
-      push(student_movement_pass_db,datas);
-      window.location.href = "movement_pass.html"
+      push(student_movement_pass_db,datas)
+    .then(() => {
+      
+      window.location.href = "movement_pass.html";
+    })
+    .catch((error) => {
+      console.error("❌ Error saving to Firebase:", error);
+      alert("Failed to create pass.");
+    });
     }
    
     else{
