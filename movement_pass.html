@@ -201,84 +201,82 @@
   let btn = document.querySelector('#btn');
   let purpose =  document.querySelector('#purpose');
   
+
 onValue(student_movement_pass_db, (snapshot) => {
-  window.currentSnapshot = snapshot; // store snapshot globally
-  checkAndRenderPasses(); // render immediately when data loads
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    content_class.innerHTML = "";
+    let found = false;
+
+    for (let key in data) {
+      const pass = data[key];
+      if (pass.rollno === student_roll_no) {
+        found = true;
+
+        // create card for this pass
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "details";
+        detailsDiv.style.display = "flex";
+    
+        detailsDiv.innerHTML = `
+          <button id="date-button">
+            <p class="day">${pass.day}</p>
+            <p class="month">${pass.month}</p>
+          </button>
+          <div class="inner-content">
+            <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} 
+              to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
+            <p>Attendance Pass</p>
+            <p id="purpose">${pass.purpose}</p>
+          </div>
+          <button id="btn">${pass.status}</button>
+        `;
+
+        const btn = detailsDiv.querySelector("#btn");
+
+        // 🕒 Check if expired
+        let now = new Date();
+        let currentHr = now.getHours();
+        let currentMin = now.getMinutes();
+        let endHr = parseInt(pass.end_hour);
+        let endMin = parseInt(pass.end_minute);
+
+        let currentTotal = currentHr * 60 + currentMin;
+        let endTotal = endHr * 60 + endMin;
+
+        if (currentTotal >= endTotal && pass.status === "active") {
+          // ⏰ Update Firebase to expired
+          const passRef = ref(database, "student_movement_pass_details/" + key);
+          update(passRef, { status: "expired" });
+          btn.style.backgroundColor = "red";
+          btn.innerHTML = "Expired";
+        } else if (pass.status === "active") {
+          btn.style.backgroundColor = "green";
+          btn.innerHTML = "Active";
+        } else if (pass.status === "expired") {
+          btn.style.backgroundColor = "red";
+          btn.innerHTML = "Expired";
+        }
+
+        // 🎯 Click to view
+        detailsDiv.addEventListener("click", () => {
+          sessionStorage.setItem("selectedPassKey", key);
+          window.location.href = "movement_pass_1.html";
+        });
+
+        content_class.appendChild(detailsDiv);
+      }
+    }
+
+    if (!found) {
+      content_class.innerHTML = `<p style="color:#555;">No passes found.</p>`;
+    }
+  } else {
+    content_class.innerHTML = `<p style="color:#555;">No movement pass data available.</p>`;
+  }
 });
 
-// ✅ Run expiry check every 1 minute
-setInterval(checkAndRenderPasses, 60000);
 
-function checkAndRenderPasses() {
-  const snapshot = window.currentSnapshot;
-  if (!snapshot || !snapshot.exists()) {
-    content_class.innerHTML = `<p style="color:#555;">No movement pass data available.</p>`;
-    return;
-  }
-
-  const data = snapshot.val();
-  content_class.innerHTML = "";
-  let found = false;
-
-  for (let key in data) {
-    const pass = data[key];
-    if (pass.rollno === student_roll_no) {
-      found = true;
-
-      const detailsDiv = document.createElement("div");
-      detailsDiv.className = "details";
-      detailsDiv.style.display = "flex";
-
-      detailsDiv.innerHTML = `
-        <button id="date-button">
-          <p class="day">${pass.day}</p>
-          <p class="month">${pass.month}</p>
-        </button>
-        <div class="inner-content">
-          <b id="time">${pass.start_hour}:${pass.start_minute} ${pass.period1} 
-            to ${pass.end_hour}:${pass.end_minute} ${pass.period2}</b>
-          <p>Attendance Pass</p>
-          <p id="purpose">${pass.purpose}</p>
-        </div>
-        <button id="btn">${pass.status}</button>
-      `;
-
-      const btn = detailsDiv.querySelector("#btn");
-
-      // 🕒 Expiry check
-      let now = new Date();
-      let currentHr = now.getHours();
-      let currentMin = now.getMinutes();
-      let endHr = parseInt(pass.end_hour);
-      let endMin = parseInt(pass.end_minute);
-      let currentTotal = currentHr * 60 + currentMin;
-      let endTotal = endHr * 60 + endMin;
-
-      if (currentTotal >= endTotal && pass.status === "active") {
-        const passRef = ref(database, "student_movement_pass_details/" + key);
-        update(passRef, { status: "expired" });
-        btn.style.backgroundColor = "red";
-        btn.innerHTML = "Expired";
-      } else if (pass.status === "active") {
-        btn.style.backgroundColor = "green";
-        btn.innerHTML = "Active";
-      } else {
-        btn.style.backgroundColor = "red";
-        btn.innerHTML = "Expired";
-      }
-
-      detailsDiv.addEventListener("click", () => {
-        sessionStorage.setItem("selectedPassKey", key);
-        window.location.href = "movement_pass_1.html";
-      });
-
-      content_class.appendChild(detailsDiv);
-    }
-  }
-
-  if (!found) {
-    content_class.innerHTML = `<p style="color:#555;">No passes found.</p>`;
-  }
-}
+  
 
 </script>
