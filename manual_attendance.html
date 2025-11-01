@@ -124,85 +124,13 @@ button:hover {
   border-radius: 50%;
   
 }
-      /* Mobile Responsive CSS */
-@media (max-width: 768px) {
-  .container {
-    padding: 8px 12px;
-    gap: 10px;
-  }
-
-  .container h2 {
-    font-size: 1rem;
-  }
-
-  .container-2 b {
-    font-size: 14px;
-  }
-
-  .container-3 b {
-    font-size: 14px;
-  }
-
-  .input-wrapper {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .input-wrapper input {
-    width: 100%;
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .input-wrapper button {
-    width: 100%;
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .container-4 {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    width: 95%;
-    margin: 15px auto;
-  }
-
-  .left {
-    width: 100%;
-    text-align: center;
-  }
-
-  .right {
-    width: 100%;
-    text-align: center;
-  }
-
-  #view {
-    width: 80%;
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .fa-solid.fa-user {
-    font-size: 20px;
-    padding: 8px;
-  }
-
-  button {
-    font-size: 14px;
-    padding: 6px 10px;
-  }
-}
-
     </style>
   </head>
   <body>
     <div id="body-container">
       <div class="container">
         <i class="fa-solid fa-arrow-left"></i>
-        <h2>Manual Attendance</h2>
+        <h2>Manual Approval</h2>
         <i class="fa-solid fa-calendar"></i>
       </div>
 
@@ -211,12 +139,12 @@ button:hover {
       </div>
 
       <div class="container-3">
-        <b>Enter Student Roll Number</b>
+        <b>Enter Student Movement ID</b>
         <div class="input-wrapper">
           <input
             id="input"
             type="text"
-            placeholder="Enter Student Roll Number"
+            placeholder=" Movement ID"
           />
           <button id="searchBtn">Search</button>
         </div>
@@ -254,6 +182,10 @@ button:hover {
       const app = initializeApp(appSetting);
       const database = getDatabase(app);
       const name_db = ref(database, "users");
+      const student_movement_pass_db = ref(
+    database,
+    "student_movement_pass_details"
+  );
 
       const monthNames = [
         "January",
@@ -281,25 +213,26 @@ button:hover {
         window.location.href = "teachers.html";
       });
       const search_btn = document.querySelector("#searchBtn");
+     let value_input = "";
       search_btn.addEventListener("click", () => {
         let input_value = document.querySelector("#input").value.trim();
         let user_name = document.querySelector("#name")
         let id = document.querySelector("#id_num")
+        value_input = input_value;
  
         const container_4 = document.querySelector(".container-4")
-        onValue(name_db, (snapshot) => {
+        get(student_movement_pass_db).then((snapshot) => {
           if (!snapshot.exists()) return;
 
           const data = snapshot.val();
           for(let key in data)
           {
-            if(data[key].userType==="student")
-            {
-                if(data[key].emailOrRoll === input_value)
+                if(data[key].id === input_value)
                 {
                    container_4.style.display = "flex";
                    user_name.innerHTML = data[key].name;
-                   id.innerHTML = data[key].emailOrRoll;
+                   id.innerHTML = data[key].email;
+                   sessionStorage.setItem("key", key);
                    break;
                 }
                 else
@@ -311,14 +244,13 @@ button:hover {
 
             }
           }
+      );
         });
-      });
+      
       const view_btn = document.querySelector("#view");
       view_btn.addEventListener("click", () => {
-        window.location.href = "manual_attendance_1.html";
+        window.location.href = "approve_pass.html";
       });
     </script>
   </body>
 </html>
-
-
