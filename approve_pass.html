@@ -229,7 +229,7 @@
   };
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
- let key = sessionStorage.getItem('key');
+ let key = sessionStorage.getItem("key");
  
 
  const passRef = ref(database, "student_movement_pass_details/" + key);
@@ -297,21 +297,24 @@ rollnoElement.innerText = rollno;
 
 
 
-approved_btn1.addEventListener("click", () => {
+const approved_btn_1 = document.getElementById("approved_btn_1");
+const approved_btn = document.getElementById("approved_btn");
+
+approved_btn_1.addEventListener("click", () => {
   update(ref(database, "student_movement_pass_details/" + key), {
     activity_status: "activated",
-    approved_by: sessionStorage.getItem("teacher_name")
+    approved_by: sessionStorage.getItem("teacher_name") || "Unknown Teacher"
   }).then(() => {
     alert("Pass Activated Successfully!");
-  });
+  }).catch(err => console.error("Activation Error:", err));
 });
 
-unactive_btn.addEventListener("click", () => {
+approved_btn.addEventListener("click", () => {
   update(ref(database, "student_movement_pass_details/" + key), {
     activity_status: "Not Activated"
   }).then(() => {
     alert("Pass Deactivated Successfully!");
-  });
+  }).catch(err => console.error("Deactivation Error:", err));
 });
 
 
