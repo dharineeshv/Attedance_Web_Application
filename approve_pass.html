@@ -236,6 +236,21 @@
  const passRef = ref(database, "student_movement_pass_details/" + key);
 
  
+const departmentMap = {
+  CT: "Computer Technology",
+  CS: "Computer Science Engineering",
+  IT: "Information Technology",
+  AD: "Artificial Intelligence And Data Science",
+  ME: "Mechanical Engineering",
+  AL: "Artificial And Machine Learning",
+  MB: "Master Of Business Administration",
+  CB: "Computer Science And Business Systems",
+  CD : "Computer Design",
+  EE : "Electrical And Electronics",
+  EC : "Electronics Communication Of Engineering",
+  SE: "Information Science And Engineering",
+  MT: "Master Of Technology"
+};
 
 
 let name = "";
@@ -252,8 +267,21 @@ get(passRef).then(snapshot => {
     date.innerText = `${data.day} ${data.month} ${data.year}`;
     time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
     document.querySelector(".activity-status b span").innerText = data.id;
-    name = data.name;
-    rollno = data.rollno;
+
+     let name = data.name || "Unknown";
+    let rollno = data.rollno || "";
+
+    // Extract dept code safely from rollno (check length first)
+    let deptCode = rollno.length >= 9 ? rollno.slice(7, 9) : "";
+
+    // Map to full department name
+    let department = departmentMap[deptCode] || "Unknown Department";
+
+    // Update DOM elements
+    document.getElementById("name").innerText = name;
+    document.getElementById("rollno").innerText = rollno;
+    document.getElementById("dept").innerText = department;
+
    
     if (data.status === "expired") {
   document.querySelector(".container-1 button").innerText = "Expired";
@@ -272,34 +300,10 @@ get(passRef).then(snapshot => {
     window.history.back();
   });
 
-const departmentMap = {
-  CT: "Computer Technology",
-  CS: "Computer Science Engineering",
-  IT: "Information Technology",
-  AD: "Artificial Intelligence And Data Science",
-  ME: "Mechanical Engineering",
-  AL: "Artificial And Machine Learning",
-  MB: "Master Of Business Administration",
-  ME: "Master Of Engineering",
-  CB: "Computer Science And Business Systems",
-  CD : "Computer Design",
-  EE : "Electrical And Electronics",
-  EC : "Electronics Communication Of Engineering",
-  SE: "Information Science And Engineering"
-};
 
 
-console.log(rollno);
 
 
-let department = departmentMap[dept] || "Unknown Department";
-let nameElement = document.getElementById("name");
-nameElement.innerText = name
-
-let rollnoElement = document.getElementById("rollno");
-let deptElement = document.getElementById("dept");
-deptElement.innerText = department;
-rollnoElement.innerText = rollno;
 
 
 
