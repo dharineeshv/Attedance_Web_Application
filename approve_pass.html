@@ -306,7 +306,7 @@ const approved_btn = document.getElementById("approved_btn");
 approved_btn_1.addEventListener("click", () => {
   update(ref(database, "student_movement_pass_details/" + key), {
     activity_status: "activated",
-    approved_by: sessionStorage.getItem("teacher_name") || "Unknown Teacher"
+    approved_by: sessionStorage.getItem("email") || "Unknown Teacher"
   }).then(() => {
     alert("Pass Activated Successfully!");
   }).catch(err => console.error("Activation Error:", err));
