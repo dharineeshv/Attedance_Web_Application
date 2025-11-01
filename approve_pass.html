@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movement Pass</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+  />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Roboto", sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      background-color: #8a00ff;
+      color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+       position: fixed;
+      top: 0;             
+       left: 0;         
+       width: 100%;         
+  
+    }
+
+    .nav-container i {
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .nav-container i:hover {
+      transform: translateX(-3px);
+    }
+
+    .nav-container h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+   
+  
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 80px auto 0 auto; /* top | left/right | bottom | left/right */
+  width: 90%;
+  gap:2px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+}
+
+
+    .container-1
+    {
+        display:flex;
+        color:white;
+        justify-content: space-between;
+        background:#8800ff; 
+        padding:20px;
+        border-radius: 10px;
+        
+        
+    }
+    .container-2 
+    {
+        display:flex;
+        gap:10px;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        background:white;
+        
+
+    }
+    button {
+        background-color: rgba(255, 0, 0, 0.9);
+        border:none;
+        color:white;
+        padding:8px;
+        border-radius: 8px;
+    }
+   .container img{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+    .container-2 b {
+        font-weight:500;
+        color:rgba(0, 0, 0, 0.688)
+    }
+   .container-3
+   {
+        display:flex;
+        justify-content: space-between;
+        padding:20px;
+        background:white;
+        border-radius: 10px;   
+   }
+   .c1 {
+    display:flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap:6px;
+   }
+   .c1 b {
+    color:rgba(0, 0, 0, 0.588);
+   }
+   .c1 p 
+   {
+    font-weight: 600;
+   }
+    .timer {
+        padding:20px;
+        background:white;
+        display:flex;
+        justify-content: center;
+    }
+    .container-4 {
+        display:flex;
+        justify-content: space-between;
+        padding:20px;
+        background:white;
+        border-radius: 10px;
+        flex-direction: column;
+    }
+    .activity-status {
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .approval-status {
+        margin-top: 20px;
+        display:flex;
+        justify-content: center;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    #approved_btn_1{
+         background-color: green;
+    }
+    #approved_btn_1:hover {
+        transform: translateX(-3px);
+    }
+    #approved_btn{
+         background-color: red;
+    }
+    #approved_btn:hover {
+        transform: translateX(-3px);
+    }
+
+  </style>
+</head>
+<body>
+  
+  <div class="nav-container">
+    <i class="fa-solid fa-arrow-left"></i>
+    <h2>Movement Pass Details</h2>
+  </div>
+<div class="container">
+    <div class="container-1">
+        <h2>Attendance Pass</h2>
+        <button>Expired</button>
+    </div>
+    <div class="container-2">
+           <img src="profile_image_for_project.png" alt="profile_picture">
+           <h2 id="name">Dharineesh</h2>
+           <b id="rollno">7376232CT109</b>
+           <b id="dept">Computer Technology</b>
+           <hr>
+    </div>
+    <div class="container-3">
+           <div class="c1">
+                <b >Date </b>
+                <p id="date">13 SEP 2025</p>
+           </div>
+           <div class="c1">
+                <b>Time </b>
+                <p id="time">11:30 AM to 11:50 AM</p>
+           </div>
+           <div class="c1">
+            <b>Purpose</b>
+            <p id="purpose">Going to cls</p>
+           </div>
+    </div>
+    <div class="container-4">
+      <div class="activity-status">
+        <b>ID :#<span>123456</span></b>
+        <button id="approved_btn_1">Mark As Activated</button>
+        <button id="approved_btn">Mark As Not Activated</button>
+      </div>
+        
+    </div>
+   
+</div>
+
+</body>
+</html>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    get,
+    push,
+    update
+  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+
+  const appSetting = {
+    databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+  };
+  const app = initializeApp(appSetting);
+  const database = getDatabase(app);
+ let key = sessionStorage.getItem('key');
+ 
+
+ const passRef = ref(database, "student_movement_pass_details/" + key);
+
+ 
+
+
+
+get(passRef).then(snapshot => {
+    let date = document.getElementById("date");
+    let time = document.getElementById("time");
+    let purpose = document.getElementById("purpose");
+  if (snapshot.exists()) {
+    
+    const data = snapshot.val();
+     
+      purpose.innerText = data.purpose;
+    date.innerText = `${data.day} ${data.month} ${data.year}`;
+    time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
+    document.querySelector(".activity-status b span").innerText = data.id;
+   
+    if (data.status === "expired") {
+  document.querySelector(".container-1 button").innerText = "Expired";
+  document.querySelector(".container-1 button").style.backgroundColor = "red";
+} else {
+  document.querySelector(".container-1 button").innerText = "Active";
+  document.querySelector(".container-1 button").style.backgroundColor = "green";
+}
+
+  }
+});
+   
+
+
+  document.querySelector(".fa-arrow-left").addEventListener("click", () => {
+    window.history.back();
+  });
+
+const departmentMap = {
+  CT: "Computer Technology",
+  CS: "Computer Science Engineering",
+  IT: "Information Technology",
+  AD: "Artificial Intelligence And Data Science",
+  ME: "Mechanical Engineering",
+  AL: "Artificial And Machine Learning",
+  MB: "Master Of Business Administration",
+  ME: "Master Of Engineering",
+  CB: "Computer Science And Business Systems",
+  CD : "Computer Design",
+  EE : "Electrical And Electronics",
+  EC : "Electronics Communication Of Engineering",
+  SE: "Information Science And Engineering"
+};
+let rollno = sessionStorage.getItem("Rollno");
+let dept = rollno.slice(7, 9);
+
+let department = departmentMap[dept] || "Unknown Department";
+let nameElement = document.getElementById("name");
+nameElement.innerText = sessionStorage.getItem("name");
+
+let rollnoElement = document.getElementById("rollno");
+let deptElement = document.getElementById("dept");
+deptElement.innerText = department;
+rollnoElement.innerText = rollno;
+
+
+
+approved_btn1.addEventListener("click", () => {
+  update(ref(database, "student_movement_pass_details/" + key), {
+    activity_status: "activated",
+    approved_by: sessionStorage.getItem("teacher_name")
+  }).then(() => {
+    alert("Pass Activated Successfully!");
+  });
+});
+
+unactive_btn.addEventListener("click", () => {
+  update(ref(database, "student_movement_pass_details/" + key), {
+    activity_status: "Not Activated"
+  }).then(() => {
+    alert("Pass Deactivated Successfully!");
+  });
+});
+
+
+
+
+</script>
