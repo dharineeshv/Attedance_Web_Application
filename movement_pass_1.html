@@ -132,6 +132,44 @@
         display:flex;
         justify-content: center;
     }
+    .container-4 {
+        display:flex;
+        justify-content: space-between;
+        padding:20px;
+        background:white;
+        border-radius: 10px;
+        flex-direction: column;
+    }
+    .activity-status {
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .approval-status {
+        margin-top: 20px;
+        display:flex;
+        justify-content: center;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    #approved_btn_1{
+         background-color: green;
+    }
+    #approved_btn_1:hover {
+        transform: translateX(-3px);
+    }
+    #approved_btn{
+         background-color: red;
+    }
+    #approved_btn:hover {
+        transform: translateX(-3px);
+    }
+.approved_by_status {
+  display:none;
+  flex-direction: row;
+  justify-content: center;
+  gap:5px;
+}
   </style>
 </head>
 <body>
@@ -166,6 +204,16 @@
             <p id="purpose">Going to cls</p>
            </div>
     </div>
+    <div class="container-4">
+      <div class="activity-status">
+        <b>ID :#<span id="id">123456</span></b>
+        <button id="approved_btn">Not Activated</button>
+      </div>
+        <div class="approved_by_status">
+          <b>By:</b>
+          <p id="approved_by"></p>
+        </div>
+    </div>
    
 </div>
 
@@ -189,22 +237,62 @@
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
  let key = sessionStorage.getItem('selectedPassKey');
+ 
+ 
  const passRef = ref(database, "student_movement_pass_details/" + key);
+ let approved_db = ref(database,"aprroved_teacher_db");
+
+
+let unique_id = "";
 get(passRef).then(snapshot => {
     let date = document.getElementById("date");
     let time = document.getElementById("time");
     let purpose = document.getElementById("purpose");
+    const approve_class = document.querySelector(".approved_by_status");
+    let found = false;
   if (snapshot.exists()) {
     const data = snapshot.val();
-     purpose.innerText = data.purpose;
+    purpose.innerText = data.purpose;
     date.innerText = `${data.day} ${data.month} ${data.year}`;
     time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
+    document.querySelector(".activity-status b span").innerText = data.id;
+    unique_id = data.id;
     if(data.status === "expired") {
         document.querySelector("button").innerText = "Expired";
     } else {
         document.querySelector("button").innerText = "Active";
         document.querySelector("button").style.backgroundColor = "green";
     }
+    
+         if(data.activity_status === "activated")
+            {
+                let approved_by = document.getElementById("approved_by");
+                approved_by.innerText = data.approved_by;
+                approve_class.style.display = "flex";
+                let btn = document.getElementById("approved_btn");
+                btn.style.backgroundColor = "green";
+                btn.innerText = "Activated";
+                found = true;
+                
+            }
+             if(data.activity_status === "Not Activated")
+             {
+                let approved_by = document.getElementById("approved_by");
+                let btn = document.getElementById("approved_btn");
+                btn.style.backgroundColor = "red";
+                btn.innerText = "Not Activated";
+                found = true;
+              
+             }
+      if(!found)
+      {
+        let btn = document.getElementById("approved_btn");
+        btn.style.backgroundColor = "red";
+        btn.innerText = "Not Activated";
+        approve_class.style.display = "none";
+        return;
+      }
+             
   }
 });
 
@@ -240,5 +328,5 @@ deptElement.innerText = department;
 rollnoElement.innerText = rollno;
 
 
-
 </script>
+  
