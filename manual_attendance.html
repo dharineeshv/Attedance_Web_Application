@@ -235,6 +235,7 @@ for (let key in data) {
     id.innerHTML = data[key].rollno;
     sessionStorage.setItem("roll",data[key].rollno);
     sessionStorage.setItem("key", key);
+    console.log(data[key].rollno);
     found = true;
     break;
   }
@@ -258,4 +259,5 @@ if (!found) {
     </script>
   </body>
 </html>
+
 
