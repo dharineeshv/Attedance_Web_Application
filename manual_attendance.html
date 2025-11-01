@@ -233,6 +233,7 @@ for (let key in data) {
     container_4.style.display = "flex";
     user_name.innerHTML = data[key].name;
     id.innerHTML = data[key].rollno;
+    sessionStorage.setItem("roll",data[key].rollno);
     sessionStorage.setItem("key", key);
     found = true;
     break;
@@ -257,3 +258,4 @@ if (!found) {
     </script>
   </body>
 </html>
+
