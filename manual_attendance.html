@@ -169,9 +169,11 @@ button:hover {
         getDatabase,
         ref,
         push,
+        get,
         onValue,
         set,
         remove,
+
       } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
       let appSetting = {
@@ -231,7 +233,7 @@ button:hover {
                 {
                    container_4.style.display = "flex";
                    user_name.innerHTML = data[key].name;
-                   id.innerHTML = data[key].email;
+                   id.innerHTML = data[key].rollno;
                    sessionStorage.setItem("key", key);
                    break;
                 }
