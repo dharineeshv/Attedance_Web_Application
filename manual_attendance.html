@@ -227,24 +227,25 @@ button:hover {
           if (!snapshot.exists()) return;
 
           const data = snapshot.val();
-          for(let key in data)
-          {
-                if(data[key].id === input_value)
-                {
-                   container_4.style.display = "flex";
-                   user_name.innerHTML = data[key].name;
-                   id.innerHTML = data[key].rollno;
-                   sessionStorage.setItem("key", key);
-                   break;
-                }
-                else
-                {
-                  container_4.style.display = "none";
-                  user_name.innerHTML = "";
-                  id.innerHTML = "";
-                }
+          let found = false;
+for (let key in data) {
+  if (data[key].id === input_value) {
+    container_4.style.display = "flex";
+    user_name.innerHTML = data[key].name;
+    id.innerHTML = data[key].rollno;
+    sessionStorage.setItem("key", key);
+    found = true;
+    break;
+  }
+}
 
-            }
+if (!found) {
+  container_4.style.display = "none";
+  user_name.innerHTML = "";
+  id.innerHTML = "";
+  alert("No matching movement pass found!");
+}
+
           }
       );
         });
