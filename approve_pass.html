@@ -238,7 +238,8 @@
  
 
 
-
+let name = "";
+  let rollno = "";
 get(passRef).then(snapshot => {
     let date = document.getElementById("date");
     let time = document.getElementById("time");
@@ -251,6 +252,8 @@ get(passRef).then(snapshot => {
     date.innerText = `${data.day} ${data.month} ${data.year}`;
     time.innerHTML = `${data.start_hour}:${data.start_minute} ${data.period1} to ${data.end_hour}:${data.end_minute} ${data.period2}`;
     document.querySelector(".activity-status b span").innerText = data.id;
+    name = data.name;
+    rollno = data.rollno;
    
     if (data.status === "expired") {
   document.querySelector(".container-1 button").innerText = "Expired";
@@ -285,13 +288,13 @@ const departmentMap = {
   SE: "Information Science And Engineering"
 };
 
-let rollno =  sessionStorage.getItem("roll");
+
 console.log(rollno);
 
 
 let department = departmentMap[dept] || "Unknown Department";
 let nameElement = document.getElementById("name");
-nameElement.innerText = sessionStorage.getItem("name");
+nameElement.innerText = name
 
 let rollnoElement = document.getElementById("rollno");
 let deptElement = document.getElementById("dept");
