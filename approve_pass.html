@@ -230,6 +230,7 @@
   const app = initializeApp(appSetting);
   const database = getDatabase(app);
  let key = sessionStorage.getItem("key");
+ console.log(key);
  
 
  const passRef = ref(database, "student_movement_pass_details/" + key);
