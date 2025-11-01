@@ -299,9 +299,12 @@ if(end_hr >= 12)
 
 
   let submit_btn = document.querySelector("#button");
-  
+  let id = "";
+  for(let i=0;i<6;i++)
+  {
+     id += Math.floor(Math.random() * 10);
+  }
   submit_btn.addEventListener("click", () => {
-    console.log("clicked")
     let purpose = document.querySelector("#textarea").value.trim();
     const rollno = sessionStorage.getItem("Rollno");
     const name = sessionStorage.getItem("name");
@@ -319,7 +322,10 @@ if(end_hr >= 12)
         status:"active",
         period1:period1,
         period2:period2,
-        year:year
+        year:year,
+        id:id,
+        approved_by:"",
+        activity_status:"Not Activated"
       };
       push(student_movement_pass_db,datas)
     .then(() => {
