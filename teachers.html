@@ -25,8 +25,8 @@
         <button id="timer-button">15</button>
       </div>
       <div class="buttons">
-        <button class="btn" id="btn1">Generete New OTP</button>
-        <button class="btn" id="btn2">Manual Attendance</button>
+        <button class="btn" id="btn1">Generate OTP</button>
+        <button class="btn" id="btn2"> Movement Pass</button>
       </div>
     </div>
     <div id="live">
@@ -155,7 +155,7 @@
     box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
   }
   .otp-container {
-    display: flex;
+    display: none;
     gap: 10px;
   }
   .btn {
@@ -235,6 +235,7 @@
     flex-direction: column;
     gap: 5px;
     align-items: flex-start;
+    display:flex;
   }
 
   #clearBtn {
@@ -266,7 +267,11 @@ const timer = document.querySelector(".timer");
 const s = document.querySelector("#timer-button");
 const liveContainer = document.querySelector("#live");
 let currentOtp = "";
+let otp_container = document.querySelector('.otp-container');
+let live_header = document.querySelector('.live-header');
 
+
+live_header.style.display = "none";
 // Generate OTP
 btnaction.addEventListener("click", () => {
   currentOtp = "";
@@ -278,6 +283,7 @@ btnaction.addEventListener("click", () => {
     const value = Math.floor(Math.random() * 10);
     input.value = value;
     currentOtp += value;
+    otp_container.style.display = "flex";
   });
 const now = new Date();
 const hours = now.getHours();
@@ -302,7 +308,7 @@ setTimeout(() => {
   // Timer
   s.style.backgroundColor = "orangered";
   s.style.animation = "none";
-  let seconds = 1500; // 25 minutes
+  let seconds = 15; // 25 minutes
   s.innerHTML = seconds;
 
   const sec = setInterval(() => {
@@ -315,6 +321,8 @@ setTimeout(() => {
       clearInterval(sec);
       timer.style.display = "none";
       otpInputs.forEach((input) => (input.value = ""));
+      otp_container.style.display = "none";
+
     }
   }, 1000);
 });
@@ -329,6 +337,8 @@ manual.addEventListener("click", () => {
 //verified_____________________________________________________
 
 // Live attendance listener
+
+
 onValue(student_otp_db, (snapshot) => {
   if (snapshot.exists())
   {
@@ -345,6 +355,7 @@ onValue(student_otp_db, (snapshot) => {
 
       // Check if this student is already displayed
       if (!document.getElementById(key)) {
+        live_header.style.display = "none";
         const studentDiv = document.createElement("div");
         studentDiv.classList.add("student_details");
         studentDiv.id = key; // unique ID to prevent duplicates
@@ -393,4 +404,3 @@ delete_btn.addEventListener('click',()=>
     })
 })
 </script>
-
