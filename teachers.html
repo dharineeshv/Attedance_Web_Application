@@ -274,7 +274,37 @@
     align-items: flex-start;
   }
 }
+@media (max-width: 480px) {
+  .otpbox {
+    width: 14vw;
+    min-width: 32px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
 
+  .btn {
+    width: 80%;
+    font-size: 0.85rem;
+  }
+
+  #clearBtn {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+  }
+
+  .student_details {
+    padding: 10px;
+  }
+
+  .student_details .right {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+}
 /* ✅ Responsive CSS for Mobiles (≤480px) */
 @media (max-width: 480px) {
   .container {
@@ -519,6 +549,7 @@ delete_btn.addEventListener('click',()=>
     })
 })
 </script>
+
 
 
 
