@@ -239,14 +239,14 @@
   }
 }
 
-/* ✅ Responsive adjustments for mobile phones */
+/* ✅ Mobile Responsive Fix (Keep Layout Order Same) */
 @media (max-width: 480px) {
-  .nav-container {
-    padding: 10px 14px;
+  body {
+    font-size: 0.9rem;
   }
 
-  .nav-container i {
-    font-size: 1rem;
+  .nav-container {
+    padding: 10px 14px;
   }
 
   .nav-container h2 {
@@ -254,12 +254,16 @@
   }
 
   .container {
-    width: 96%;
+    width: 94%;
     margin-top: 70px;
+    gap: 10px;
   }
 
   .container-1 {
     padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 
   .container-1 h2 {
@@ -267,17 +271,20 @@
   }
 
   .container-1 button {
-    font-size: 0.8rem;
-    padding: 6px 8px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 8px;
   }
 
   .container-2 {
-    padding: 12px;
+    padding: 15px 10px;
+    text-align: center;
   }
 
   .container-2 img {
-    width: 75px;
-    height: 75px;
+    width: 80px;
+    height: 80px;
   }
 
   .container-2 h2 {
@@ -289,8 +296,9 @@
   }
 
   .container-3 {
-    padding: 12px;
+    flex-direction: column;
     gap: 10px;
+    padding: 12px;
   }
 
   .c1 b {
@@ -302,16 +310,30 @@
   }
 
   .container-4 {
+    flex-direction: column;
+    gap: 10px;
     padding: 12px;
   }
 
+  .activity-status {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    text-align: center;
+  }
+
   .activity-status b {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .activity-status button {
-    font-size: 0.85rem;
-    padding: 7px 9px;
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .approval-status {
+    text-align: center;
   }
 
   button {
