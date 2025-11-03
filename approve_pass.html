@@ -164,7 +164,27 @@
     #approved_btn:hover {
         transform: translateX(-3px);
     }
-    /* ✅ Responsive adjustments for tablets and smaller screens */
+    /* ✅ Keep "Attendance Pass" and "Expired" button on the same line (mobile fix) */
+@media (max-width: 480px) {
+  .container-1 {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .container-1 h2 {
+    font-size: 1rem;
+  }
+
+  .container-1 button {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+}
+
 @media (max-width: 768px) {
   .nav-container {
     padding: 12px 16px;
