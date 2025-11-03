@@ -124,6 +124,66 @@ button:hover {
   border-radius: 50%;
   
 }
+      /* ✅ Responsive Design for Search Result Card */
+@media (max-width: 768px) {
+  .container-4 {
+    flex-direction: column; /* stack items vertically */
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    padding: 15px;
+    width: 95%;
+  }
+
+  #left-left {
+    display: flex;
+    justify-content: center;
+  }
+
+  .left {
+    align-items: center;
+    gap: 5px;
+  }
+
+  .right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  #view {
+    width: 80%;
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .fa-solid.fa-user {
+    font-size: 30px;
+    padding: 10px;
+  }
+}
+
+/* ✅ Extra-small mobile (phones ≤480px) */
+@media (max-width: 480px) {
+  .container-4 {
+    width: 90%;
+    padding: 12px;
+  }
+
+  .fa-solid.fa-user {
+    font-size: 26px;
+  }
+
+  #view {
+    width: 90%;
+    font-size: 0.85rem;
+  }
+
+  .left p {
+    font-size: 0.9rem;
+  }
+}
+
     </style>
   </head>
   <body>
@@ -259,5 +319,6 @@ if (!found) {
     </script>
   </body>
 </html>
+
 
 
