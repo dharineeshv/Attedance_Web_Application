@@ -179,51 +179,18 @@
     text-align: center;
     font-weight: bold;
   }
-  /* Responsive CSS for mobiles */
+  /* ✅ Responsive CSS for Tablets (≤768px) */
 @media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    font-size: 1rem;
+    text-align: center;
+  }
+
   .container-2 {
     width: 95%;
     padding: 15px;
     gap: 15px;
-  }
-
-  .otp-container {
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-
-  .otpbox {
-    width: 12vw;
-    min-width: 40px;
-    height: 40px;
-    font-size: 1rem;
-  }
-
-  .btn {
-    width: 45%;
-    min-width: 100px;
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-
-  .timer button {
-    width: 70%;
-    font-size: 0.9rem;
-  }
-
-  .student_details {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-    gap: 5px;
-  }
-
-  .student_details .right {
-    align-items: flex-start;
-  }
-
-  #live {
-    padding: 5px;
   }
 
   h2 {
@@ -231,15 +198,163 @@
     text-align: center;
   }
 
+  .otp-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap; /* ✅ Keep all 6 boxes in a single line */
+    overflow-x: auto;  /* ✅ Scroll if narrow */
+    gap: 8px;
+  }
+
+  .otpbox {
+    width: 9vw;
+    min-width: 40px;
+    height: 45px;
+    font-size: 1rem;
+  }
+
+  .timer {
+    gap: 6px;
+  }
+
+  .timer b {
+    font-size: 0.95rem;
+  }
+
+  .timer button {
+    width: 60%;
+    height: 40px;
+    font-size: 0.95rem;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    width: 45%;
+    min-width: 120px;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  #live {
+    padding: 8px;
+    gap: 8px;
+  }
+
   .live-header {
     flex-direction: column;
-    gap: 5px;
     align-items: flex-start;
-    display:flex;
+    gap: 8px;
   }
 
   #clearBtn {
     width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .student_details {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .student_details .left,
+  .student_details .right {
+    width: 100%;
+  }
+
+  .student_details .right {
+    align-items: flex-start;
+  }
+}
+
+/* ✅ Responsive CSS for Mobiles (≤480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .container-2 {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .otp-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap; /* ✅ Always one line */
+    overflow-x: auto;
+    gap: 6px;
+  }
+
+  .otpbox {
+    width: 12vw;
+    min-width: 35px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .timer button {
+    width: 70%;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    width: 80%;
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  #live {
+    padding: 5px;
+    gap: 6px;
+  }
+
+  .live-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  #clearBtn {
+    width: 100%;
+    font-size: 0.85rem;
+  }
+
+  .student_details {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+
+  .student_details .left,
+  .student_details .right {
+    width: 100%;
+  }
+
+  .student_details .right {
+    align-items: flex-start;
   }
 }
 
@@ -404,4 +519,5 @@ delete_btn.addEventListener('click',()=>
     })
 })
 </script>
+
 
