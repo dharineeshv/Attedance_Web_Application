@@ -355,7 +355,7 @@ onValue(student_otp_db, (snapshot) => {
 
       // Check if this student is already displayed
       if (!document.getElementById(key)) {
-        live_header.style.display = "none";
+        live_header.style.display = "flex";
         const studentDiv = document.createElement("div");
         studentDiv.classList.add("student_details");
         studentDiv.id = key; // unique ID to prevent duplicates
@@ -404,3 +404,4 @@ delete_btn.addEventListener('click',()=>
     })
 })
 </script>
+
