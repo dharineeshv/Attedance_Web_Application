@@ -183,15 +183,18 @@
   }
 
   .otp-container {
-    flex-wrap: wrap;
+    display: flex;
     justify-content: center;
+    flex-wrap: nowrap; /* ✅ Keep OTP boxes on one line */
+    overflow-x: auto; /* ✅ Allow scroll if too tight */
     gap: 8px;
   }
 
   .otpbox {
-    width: 12vw;
+    width: 10vw;
     height: 6vh;
     font-size: 1rem;
+    min-width: 40px; /* ✅ Ensures visible even on very small widths */
   }
 
   .btn-container {
@@ -242,15 +245,18 @@
   }
 
   .otp-container {
-    flex-wrap: wrap;
+    display: flex;
     justify-content: center;
+    flex-wrap: nowrap; /* ✅ Force all 6 in one row */
+    overflow-x: auto; /* ✅ Scrolls horizontally if too narrow */
     gap: 6px;
   }
 
   .otpbox {
-    width: 15vw;
+    width: 13vw;
     height: 6vh;
     font-size: 0.9rem;
+    min-width: 35px;
   }
 
   h2 {
@@ -276,6 +282,7 @@
     justify-content: center;
   }
 }
+
 
 </style>
 <script
@@ -408,6 +415,7 @@ let teacherName = "";
   
 
 </script>
+
 
 
 
