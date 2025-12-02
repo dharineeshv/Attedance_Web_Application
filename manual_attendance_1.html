@@ -219,8 +219,8 @@
     const student_all_otp_details = ref(database, "student_day_wise_details");
 
     // Retrieve from sessionStorage
-    const teacher_email = sessionStorage.getItem("email") || "Teacher";
-    const rollno = sessionStorage.getItem("Rollno") || "unknown";
+    let teacher_email = sessionStorage.getItem("email") || "Teacher";
+    let rollno = sessionStorage.getItem("Rollno") || "unknown";
 
     // Date input setup: default to today
     const dateInput = document.getElementById("dateInput");
