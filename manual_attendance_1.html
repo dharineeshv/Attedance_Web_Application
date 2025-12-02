@@ -252,6 +252,8 @@
   const month = String(today.getMonth() + 1).padStart(2, "0");
   const day = String(today.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
+  let update_date = `${day}-${month}-${year}`;
+  
   dateInput.value = formattedDate;
 
    const presentButtons = document.querySelectorAll("button.present");
@@ -259,7 +261,6 @@
    
    
 
-  // Add click listener to each
   presentButtons.forEach((btn) => {
     btn.addEventListener("click", async (e) => {
        const clickedBtn = e.target;
@@ -294,8 +295,8 @@ absentButtons.forEach((btn) => {
     const box = clickedBtn.closest(".box");
     const leftDiv = box.querySelector(".left");
     const rightDiv = box.querySelector(".right");
+    const rollno = sessionStorage.getItem("rollno");
 
-    const rollno = rollInput.value.trim();
     if (!rollno) {
       alert("Please enter a roll number first!");
       return;
@@ -314,23 +315,23 @@ absentButtons.forEach((btn) => {
   });
 });
 
-  async function markManualAttendance(rollno, date, boxNumber, status,teacher_email) {
-  // ✅ Format date like 27-10-2025
-  const [yyyy, mm, dd] = date.split("-");
-  const formattedDate = `${yyyy}-${mm}-${dd}`;
 
 
-  // ✅ Format current time
+async function markManualAttendance(rollno, date, boxNumber, status, teacher_email) {
+
+  const formattedDate = date; // already YYYY-MM-DD
+
   const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-  // ✅ Update same location where view_attendance reads from
   const updateRef = ref(database, `student_day_wise_details/${formattedDate}/${rollno}/period${boxNumber}`);
 
-  await update(updateRef, {
+  await set(updateRef, {
     status: status,
     markedBy: teacher_email,
     time: time
   });
-  }
-</script>
+}
 
+  
+
+</script>
