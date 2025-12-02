@@ -190,8 +190,8 @@ button:hover {
     <div id="body-container">
       <div class="container">
         <i class="fa-solid fa-arrow-left"></i>
-        <h2>Manual Approval</h2>
-        <i class="fa-solid fa-calendar"></i>
+        <h2>Manual Pass Approval</h2>
+        <i class="fa-solid fa-calendar" id="marking"></i>
       </div>
 
       <div class="container-2">
@@ -266,7 +266,7 @@ button:hover {
 
       const date = new Date();
       let p = document.querySelector(".container-2 b");
-      p.innerHTML += ` ${date.getDate()}th ${
+      p.innerHTML += ` ${date.getDate()} ${
         monthNames[date.getMonth()]
       } ${date.getFullYear()}`;
 
@@ -316,9 +316,14 @@ if (!found) {
       view_btn.addEventListener("click", () => {
         window.location.href = "approve_pass.html";
       });
+
+
+    const marking_icon = document.getElementById("marking");
+    marking_icon.addEventListener("click", () => {
+      window.location.href = "manual_marking.html";
+    });
     </script>
   </body>
 </html>
-
 
 
