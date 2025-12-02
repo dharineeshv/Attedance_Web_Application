@@ -441,7 +441,8 @@ const time12h = formattedHours + ':' + formattedMinutes + ' ' + ampm;
 
   const otpRef = push(teacher_otp_db, { 
   otp: currentOtp, 
-  email: teacherEmail,
+  teacher_email: teacherEmail,
+
   createdAt: time12h// store timestamp
 });
 
@@ -549,7 +550,6 @@ delete_btn.addEventListener('click',()=>
     })
 })
 </script>
-
 
 
 
