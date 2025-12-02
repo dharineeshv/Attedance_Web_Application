@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Custom Date Input</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual Attendance</title>
   <style>
     body {
       background: #f4f4f4;
@@ -18,25 +18,19 @@
       outline: none;
       transition: 0.3s;
       background-color: white;
-    }
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      cursor: pointer;
+      width: 80vw;
+      text-align: center;
     }
     input[type="date"]:focus {
       border-color: #4caf50;
     }
-    input {
-      width: 80vw;
-      text-align: center;
-    }
     * {
       padding: 0;
       margin: 0;
-      box-sizing: border-box;
     }
     .form {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       padding: 10px;
     }
     .container {
@@ -51,22 +45,12 @@
       border: 2px solid #ccc;
       padding: 10px;
       border-radius: 10px;
-      background-color: white;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .top-row {
-      display: flex;
-      justify-content: flex-start; 
+      display: grid;
+      grid-template-columns: 1fr auto;
       align-items: center;
-      
-    }
-    .button-group {
-      display: flex;
+      background-color: white;
       gap: 10px;
-      justify-content: flex-end; 
-      width: 100%;
+      user-select: none;
     }
     button {
       padding: 8px;
@@ -76,12 +60,7 @@
       background-color: rgba(250, 5, 5, 0.832);
       border-radius: 10px;
       cursor: pointer;
-    }
-    .present {
-      background-color: green;
-    }
-    button:hover {
-      transform: translateY(-1px);
+      font-weight: bold;
     }
     h2 {
       text-align: center;
@@ -91,22 +70,24 @@
       height: 1px;
       background-color: rgba(0, 0, 0, 0.1);
       width: 100%;
+      grid-column: 1 / -1;
+      margin-top: 15px;
     }
     .status {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      grid-column: 1 / -1;
+      margin-top: 10px;
       font-size: 14px;
       color: #333;
     }
-    .left,
-    .right {
+    .left, .right {
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .left b,
-    .right b {
+    .right b, .left b {
       color: #333;
     }
   </style>
@@ -117,244 +98,242 @@
     <input type="date" id="dateInput" />
   </div>
   <div class="container">
-
-    <div class="box">
-      <div class="top-row">
-        <b>08:45 am to 09:35 am</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="1p">Mark Present</button>
-        <button id="1a">Mark Absent</button>
-      </div>
+    <div class="box" id="box1">
+      <b>08:45 am to 09:35 am</b>
+      <button id="btn1">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name1"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time1"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>09:35 am to 10:25 am</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="2p">Mark Present</button>
-        <button id="2a">Mark Absent</button>
-      </div>
+    <div class="box" id="box2">
+      <b>09:35 am to 10:25 am</b>
+      <button id="btn2">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name2"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time2"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>10:40 am to 11:30 am</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="3p">Mark Present</button>
-        <button id="3a">Mark Absent</button>
-      </div>
+    <div class="box" id="box3">
+      <b>10:40 am to 11:30 am</b>
+      <button id="btn3">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name3"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time3"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>11:30 am to 12:20 pm</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="4p">Mark Present</button>
-        <button id="4a">Mark Absent</button>
-      </div>
+    <div class="box" id="box4">
+      <b>11:30 am to 12:20 pm</b>
+      <button id="btn4">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name4"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time4"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>01:30 pm to 02:20 pm</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="5p">Mark Present</button>
-        <button id="5a">Mark Absent</button>
-      </div>
+    <div class="box" id="box5">
+      <b>01:30 pm to 02:20 pm</b>
+      <button id="btn5">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name5"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time5"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>02:20 pm to 03:10 pm</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="6p">Mark Present</button>
-        <button id="6a">Mark Absent</button>
-      </div>
+    <div class="box" id="box6">
+      <b>02:20 pm to 03:10 pm</b>
+      <button id="btn6">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name6"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time6"></b>
+        </div>
       </div>
     </div>
-
-    <div class="box">
-      <div class="top-row">
-        <b>03:25 pm to 04:25 pm</b>
-      </div>
-      <div class="button-group">
-        <button class="present" id="7p">Mark Present</button>
-        <button id="7a">Mark Absent</button>
-      </div>
+    <div class="box" id="box7">
+      <b>03:25 pm to 04:25 pm</b>
+      <button id="btn7">Absent</button>
       <div class="down"></div>
       <div class="status">
-        <div class="left"><p>Marked by:</p><b>Dharineesh</b></div>
-        <div class="right"><p>Time:</p><b>01:00Pm</b></div>
+        <div class="left">
+          <p>Marked by:</p>
+          <b id="name7"></b>
+        </div>
+        <div class="right">
+          <p>Time:</p>
+          <b id="time7"></b>
+        </div>
       </div>
     </div>
-
   </div>
-<script type="module">
-  
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import {
-    getDatabase,
-    ref,
-    set,
-    onValue,
-    get,
-    push,
-    update
-  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-  const appSetting = {
-    databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
-  };
-  const app = initializeApp(appSetting);
-  const database = getDatabase(app);
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-  const student_all_otp_details = ref(database, "student_day_wise_details");
-  
+    const appSetting = {
+      databaseURL: "https://attendance-application-ead94-default-rtdb.firebaseio.com/",
+    };
 
-  const dateInput = document.getElementById("dateInput");
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  const formattedDate = `${year}-${month}-${day}`;
-  
-  
-  dateInput.value = formattedDate;
+    const app = initializeApp(appSetting);
+    const database = getDatabase(app);
 
-   const presentButtons = document.querySelectorAll("button.present");
-   const absentButtons = document.querySelectorAll("button[id$='a']");
+    const student_all_otp_details = ref(database, "student_day_wise_details");
 
-   
-  presentButtons.forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-       const clickedBtn = e.target;
-    const buttonId = clickedBtn.id;
+    // Retrieve from sessionStorage
+    const teacher_email = sessionStorage.getItem("email") || "Teacher";
+    const rollno = sessionStorage.getItem("Rollno") || "unknown";
 
-    
-    const box = clickedBtn.closest(".box");
+    // Date input setup: default to today
+    const dateInput = document.getElementById("dateInput");
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
 
-   
-    const leftDiv = box.querySelector(".left");
-    const rightDiv = box.querySelector(".right");
-  const rollno = sessionStorage.getItem("Rollno");
-  const date = dateInput.value;
-  const teacher_email = sessionStorage.getItem("email");
-  const boxNumber = buttonId.replace("p", ""); // e.g. 1p → 1
-  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
- leftDiv.innerHTML = `<p>Marked by:</p><b>${teacher_email}</b>`;
-    rightDiv.innerHTML = `<p>Time:</p><b>${time}</b>`;
-
-    // ✅ Optional visual cue
-    clickedBtn.classList.add("present");
-
-  await markManualAttendance(rollno, date, boxNumber, "present", teacher_email);
-    // ✅ Update UI instantly
-   
-    });
-  });
-
-absentButtons.forEach((btn) => {
-  btn.addEventListener("click", async (e) => {
-    const clickedBtn = e.target;
-    const box = clickedBtn.closest(".box");
-    const leftDiv = box.querySelector(".left");
-    const rightDiv = box.querySelector(".right");
-    const rollno = sessionStorage.getItem("Rollno");
-
-
-    if (!rollno) {
-      alert("Please enter a roll number first!");
-      return;
+    // Convert yyyy-mm-dd to dd-mm-yyyy
+    function formatDateToDDMMYYYY(isoDate) {
+      const [yyyy, mm, dd] = isoDate.split("-");
+      return `${dd}-${mm}-${yyyy}`;
     }
 
-    const date = dateInput.value;
-    const teacher_email = sessionStorage.getItem("email");
-    const boxNumber = clickedBtn.id.replace("a", "");
-    const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    // Mark Present function
+    async function markPresent(boxNumber) {
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
 
-    leftDiv.innerHTML = `<p>Marked by:</p><b>${teacher_email}</b>`;
-    rightDiv.innerHTML = `<p>Time:</p><b>${time}</b>`;
+      const formattedDate = formatDateToDDMMYYYY(dateInput.value);
 
-    await markManualAttendance(rollno, date, boxNumber, "Absent", teacher_email);
-    
-  });
-});
+      const datas = {
+        rollno: rollno,
+        boxNumber: boxNumber,
+        markedBy: teacher_email,
+        time: currentTime,
+        status: "Present",
+        date: formattedDate,
+      };
 
-async function markManualAttendance(rollno, dateIso, boxNumber, status, teacher_email) {
-  // normalize rollno key (handle possible case differences)
-  rollno = rollno || sessionStorage.getItem("Rollno") || sessionStorage.getItem("rollno");
-  if (!rollno) {
-    console.warn("No rollno provided to markManualAttendance");
-    return;
-  }
+      const recordPath = `student_day_wise_details/${rollno}_${formattedDate}_${boxNumber}`;
+      await set(ref(database, recordPath), datas);
 
-  // dateIso is YYYY-MM-DD (from <input type="date">). Convert to dd-mm-yyyy for DB/date field.
-  const [yyyy, mm, dd] = dateIso.split("-");
-  const date_ddmmyyyy = `${yyyy}-${mm}-${dd}`;
+      updateUI(boxNumber, "Present", teacher_email, currentTime);
+    }
 
+    // Mark Absent function
+    async function markAbsent(boxNumber) {
+      const formattedDate = formatDateToDDMMYYYY(dateInput.value);
 
-  // Standard time string e.g. "01:05 PM" or "13:05" depending on locale; using 12hr with AM/PM:
-  const now = new Date();
-  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const datas = {
+        rollno: rollno,
+        boxNumber: boxNumber,
+        markedBy: teacher_email,
+        time: "",
+        status: "Absent",
+        date: formattedDate,
+      };
 
-  // Make status consistent capitalization
-  const statusNormalized = (typeof status === "string" && status.toLowerCase().startsWith("p")) ? "Present" : "Absent";
+      const recordPath = `student_day_wise_details/${rollno}_${formattedDate}_${boxNumber}`;
+      await set(ref(database, recordPath), datas);
 
-  // Build the object shape view_attendance expects
-  const entryObj = {
-    rollno: rollno,
-    boxNumber: Number(boxNumber),
-    markedBy: teacher_email || sessionStorage.getItem("email") || "",
-    time: time,
-    status: statusNormalized,
-    date: `${yyyy}-${mm}-${dd}`
+      updateUI(boxNumber, "Absent", "", "");
+    }
 
-  };
+    // Update UI helper
+    function updateUI(boxNumber, status, markedBy, time) {
+      const btn = document.getElementById(`btn${boxNumber}`);
+      const nameField = document.getElementById(`name${boxNumber}`);
+      const timeField = document.getElementById(`time${boxNumber}`);
 
-  
- const flatKeyPath = `student_day_wise_details/${rollno}/${date_ddmmyyyy}/${boxNumber}`;
+      btn.textContent = status;
+      btn.style.backgroundColor = status === "Present" ? "green" : "rgba(250, 5, 5, 0.832)";
+      nameField.textContent = markedBy;
+      timeField.textContent = time;
+    }
 
-  await set(ref(database, flatKeyPath), entryObj);
+    // Load attendance data for selected date
+    async function loadAttendance() {
+      const formattedDate = formatDateToDDMMYYYY(dateInput.value);
 
-  
-}
+      // Clear all buttons first
+      for (let i = 1; i <= 7; i++) {
+        updateUI(i, "Absent", "", "");
+      }
 
+      const snapshot = await get(student_all_otp_details);
+      const allData = snapshot.val() || {};
 
-  
+      for (const key in allData) {
+        const entry = allData[key];
+        if (entry.rollno === rollno && entry.date === formattedDate) {
+          const boxNumber = entry.boxNumber;
+          const status = entry.status;
+          const markedBy = entry.markedBy;
+          const time = entry.time;
+          updateUI(boxNumber, status, markedBy, time);
+        }
+      }
+    }
 
-</script>
+    // Add click event listeners to toggle attendance status
+    for (let i = 1; i <= 7; i++) {
+      const btn = document.getElementById(`btn${i}`);
+      btn.addEventListener("click", () => {
+        if (btn.textContent === "Absent") {
+          markPresent(i);
+        } else {
+          markAbsent(i);
+        }
+      });
+    }
+
+    // When date changes, reload attendance
+    dateInput.addEventListener("change", loadAttendance);
+
+    // Initial load
+    loadAttendance();
+  </script>
+</body>
+</html>
