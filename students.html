@@ -360,7 +360,7 @@ let teacherName = "";
             name = sessionStorage.getItem("name");
             rollno = sessionStorage.getItem("Rollno");
             s_otp = data[key].otp;
-            teacherName = data[key].email;
+            teacherName = data[key].email || data[key].teacher_email;
             found = true;
           }
         }
@@ -415,7 +415,6 @@ let teacherName = "";
   
 
 </script>
-
 
 
 
