@@ -252,27 +252,26 @@
   const month = String(today.getMonth() + 1).padStart(2, "0");
   const day = String(today.getDate()).padStart(2, "0");
   const formattedDate = `${year}-${month}-${day}`;
-  let update_date = `${day}-${month}-${year}`;
+  
   
   dateInput.value = formattedDate;
 
    const presentButtons = document.querySelectorAll("button.present");
-   const absentButtons = document.querySelectorAll("button:not(.present)");
-   
-   
+   const absentButtons = document.querySelectorAll("button[id$='a']");
 
+   
   presentButtons.forEach((btn) => {
     btn.addEventListener("click", async (e) => {
        const clickedBtn = e.target;
     const buttonId = clickedBtn.id;
 
-    // Find the parent box for this button
+    
     const box = clickedBtn.closest(".box");
 
-    // Find the specific left and right sections inside this box
+   
     const leftDiv = box.querySelector(".left");
     const rightDiv = box.querySelector(".right");
-  const rollno = sessionStorage.getItem("rollno");
+  const rollno = sessionStorage.getItem("Rollno");
   const date = dateInput.value;
   const teacher_email = sessionStorage.getItem("email");
   const boxNumber = buttonId.replace("p", ""); // e.g. 1p → 1
@@ -295,7 +294,8 @@ absentButtons.forEach((btn) => {
     const box = clickedBtn.closest(".box");
     const leftDiv = box.querySelector(".left");
     const rightDiv = box.querySelector(".right");
-    const rollno = sessionStorage.getItem("rollno");
+    const rollno = sessionStorage.getItem("Rollno");
+
 
     if (!rollno) {
       alert("Please enter a roll number first!");
@@ -315,22 +315,45 @@ absentButtons.forEach((btn) => {
   });
 });
 
+async function markManualAttendance(rollno, dateIso, boxNumber, status, teacher_email) {
+  // normalize rollno key (handle possible case differences)
+  rollno = rollno || sessionStorage.getItem("Rollno") || sessionStorage.getItem("rollno");
+  if (!rollno) {
+    console.warn("No rollno provided to markManualAttendance");
+    return;
+  }
+
+  // dateIso is YYYY-MM-DD (from <input type="date">). Convert to dd-mm-yyyy for DB/date field.
+  const [yyyy, mm, dd] = dateIso.split("-");
+  const date_ddmmyyyy = `${yyyy}-${mm}-${dd}`;
 
 
-async function markManualAttendance(rollno, date, boxNumber, status, teacher_email) {
+  // Standard time string e.g. "01:05 PM" or "13:05" depending on locale; using 12hr with AM/PM:
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-  const formattedDate = date; // already YYYY-MM-DD
+  // Make status consistent capitalization
+  const statusNormalized = (typeof status === "string" && status.toLowerCase().startsWith("p")) ? "Present" : "Absent";
 
-  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  // Build the object shape view_attendance expects
+  const entryObj = {
+    rollno: rollno,
+    boxNumber: Number(boxNumber),
+    markedBy: teacher_email || sessionStorage.getItem("email") || "",
+    time: time,
+    status: statusNormalized,
+    date: `${yyyy}-${mm}-${dd}`
 
-  const updateRef = ref(database, `student_day_wise_details/${formattedDate}/${rollno}/period${boxNumber}`);
+  };
 
-  await set(updateRef, {
-    status: status,
-    markedBy: teacher_email,
-    time: time
-  });
+  
+ const flatKeyPath = `student_day_wise_details/${rollno}/${date_ddmmyyyy}/${boxNumber}`;
+
+  await set(ref(database, flatKeyPath), entryObj);
+
+  
 }
+
 
   
 
