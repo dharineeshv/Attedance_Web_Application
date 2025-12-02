@@ -339,8 +339,7 @@ function evaluateAndMark(timeStr, dateStr) {
         };
       const recordPath = `student_day_wise_details/${rollno}_${dateStr}_${boxNumber}`;
 set(ref(database, recordPath), datas);
-push(student_all_otp_details, datas); // ✅ also push to the list you display from
-
+push(student_all_otp_details, datas);
 
     }
 }
@@ -348,7 +347,7 @@ push(student_all_otp_details, datas); // ✅ also push to the list you display f
 
   onValue(student_otp_db, function(snapshot) {
     const allData = snapshot.val() || {};
-    // find the most recent entry for this rollno (or any entry)
+    
    for (const key in allData) {
     const entry = allData[key];
     if (entry['rollno'] === rollno) {
@@ -425,7 +424,7 @@ onValue(ref(database, "student_day_wise_details"), function(snapshot) {
     }
   }
   
-  let allDates = {}; // to group attendance by date
+  let allDates = {}; 
 
 for (let key in allData) {
   let entry = allData[key];
@@ -436,7 +435,7 @@ for (let key in allData) {
 
     if (!allDates[date]) allDates[date] = { morning: [], afternoon: [] };
 
-    // Categorize into morning or afternoon
+    
     if (box >= 1 && box <= 4) allDates[date].morning.push(status);
     else if (box >= 5 && box <= 7) allDates[date].afternoon.push(status);
   }
@@ -517,5 +516,4 @@ for (let i = 1; i <= 7; i++) {
 });
 
 </script>
-
 
